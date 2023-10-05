@@ -11,7 +11,8 @@ let squareBracketsClose = ws *> char ']'
 let point = ws *> char '.'
 
 let id =
-  ws *> take_while (function 'a' .. 'z' -> true | _ -> false) >>| Id.of_string
+  ws *> take_while1 (function 'a' .. 'z' -> true | _ -> false)
+  >>| Id.of_string
 
 let todo = ws
 let expr = ws >>| fun () -> NilExp
@@ -45,40 +46,10 @@ let parse p str =
   | Ok value -> value
   | Error _ -> failwith "Error"
 
-let%expect_test _ =
-  print_endline (show_var (parse var "  name"));
-  [%expect {| (Ast.SimpleVar "name") |}]
-
-let%expect_test _ =
-  print_endline (show_var (parse var "  name . name"));
-  [%expect {| (Ast.FieldVar ((Ast.SimpleVar "name"), "name")) |}]
-
-let%expect_test _ =
-  print_endline (show_var (parse var "  name . name. name  .name"));
-  [%expect
-    {|
-    (Ast.FieldVar (
-       (Ast.FieldVar ((Ast.FieldVar ((Ast.SimpleVar "name"), "name")), "name")),
-       "name")) |}]
-
-let%expect_test _ =
-  print_endline (show_var (parse var "  name [ ].name [ ] [ ] . name [ ]"));
-  [%expect
-    {|
-    (Ast.SubscriptVar (
-       (Ast.FieldVar (
-          (Ast.SubscriptVar (
-             (Ast.SubscriptVar (
-                (Ast.FieldVar (
-                   (Ast.SubscriptVar ((Ast.SimpleVar "name"), Ast.NilExp)),
-                   "name")),
-                Ast.NilExp)),
-             Ast.NilExp)),
-          "name")),
-       Ast.NilExp)) |}]
-
+let escape_init () = ref true
 let rec par p = ws *> char '(' *> ws *> par p <* ws <* char ')' <|> p
 
+(* parantheses TODO() *)
 let exp =
   fix (fun exp ->
       let var_exp = var >>| fun v -> VarExp v in
@@ -152,7 +123,7 @@ let exp =
         ForExp
           {
             var = for_id;
-            escape = ref true;
+            escape = escape_init ();
             lo = lb_exp;
             hi = ub_exp;
             body = do_exp;
@@ -161,28 +132,28 @@ let exp =
 
       let break_exp = ws *> string "break" >>| fun _ -> BreakExp in
 
-      (* let let_exp =
-           let let_dec_list = ws *> string "let" *> ws *> return [] in
-           (* TODO() *)
-           let in_exp = ws *> string "in" *> exp () in
-           let _end = ws *> string "end" in
-           let_dec_list >>| fun dec_list ->
-           in_exp >>| fun in_exp ->
-           _end >>| fun _ -> LetExp { decs = dec_list; body = in_exp }
-         in *)
+      let let_exp =
+        let let_dec_list = ws *> string "let" *> ws *> return [] in
+        (* TODO() dec how to parse*)
+        let in_exp = ws *> string "in" *> exp in
+        let _end = ws *> string "end" in
+        let_dec_list >>| fun dec_list ->
+        in_exp >>| fun in_exp ->
+        _end >>| fun _ -> LetExp { decs = dec_list; body = in_exp }
+      in
+      let array_exp =
+        let type_id = ws *> id in
+        let size_exp = ws *> char '[' *> exp <* ws <* char ']' in
+        let init_exp = ws *> string "of" *> ws *> exp in
 
-      (* let array_exp =
-           let type_id = ws *> id in
-           let size_exp = ws *> char '[' *> exp () <* ws <* char ']' in
-           let init_exp = ws *> string "of" *> ws *> exp () in
-
-           type_id >>| fun type_id ->
-           size_exp >>| fun size_exp ->
-           init_exp >>| fun init_exp ->
-           ArrayExp { typ = type_id; size = size_exp; init = init_exp }
-         in *)
+        type_id >>= fun type_id ->
+        size_exp >>= fun size_exp ->
+        init_exp >>| fun init_exp ->
+        ArrayExp { typ = type_id; size = size_exp; init = init_exp }
+      in
       choice
         [
+          array_exp;
           break_exp;
           for_exp;
           while_exp;
@@ -195,6 +166,142 @@ let exp =
           nil_exp;
           var_exp;
         ])
+
+let ty_option =
+  let some = Angstrom.map (ws *> char ':' *> id) ~f:Option.some in
+  let none = return None in
+  some <|> none
+
+let vardec =
+  let var_id = ws *> string "var" *> ws *> id in
+  let var_exp = ws *> string ":=" *> ws *> exp in
+  var_id >>= fun var_id ->
+  ty_option >>= fun var_type ->
+  var_exp >>| fun var_exp ->
+  VarDec
+    { name = var_id; escape = escape_init (); typ = var_type; init = var_exp }
+
+let tyfield =
+  let field_id = ws *> id in
+  let ty = ws *> char ':' *> ws *> id in
+  both field_id ty >>| fun (id, ty) ->
+  { name = id; escape = escape_init (); typ = ty }
+
+let fields =
+  let comma = ws *> char ',' <* ws in
+  ws *> sep_by comma tyfield
+
+let typedec =
+  let type_id = ws *> string "type" *> id <* ws <* char '=' <* ws in
+  let ty =
+    let arrayOf =
+      let p = ws *> string "array" *> ws *> string "of" *> ws *> id in
+      p >>| fun result -> ArrayTy result
+    in
+    let ty_name = id >>| fun i -> NameTy i in
+    let tyfields =
+      ws *> char '{' *> fields <* ws <* char '}' >>| fun result ->
+      RecordTy result
+    in
+    choice [ arrayOf; ty_name; tyfields ]
+  in
+  both type_id ty >>| fun (id, ty) -> { tname = id; ty }
+
+let fundec =
+  let fun_id = ws *> string "function" *> ws *> id in
+  let fields = ws *> char '(' *> ws *> fields <* ws <* char ')' in
+  let body = ws *> char '=' *> exp in
+  fun_id >>= fun fun_id ->
+  fields >>= fun fields ->
+  ty_option >>= fun ty ->
+  body >>| fun body -> { fname = fun_id; params = fields; result = ty; body }
+
+let dec =
+  let typedecs = sep_by1 ws typedec >>| fun x -> TypeDec x in
+  let funcdecs = sep_by1 ws fundec >>| fun x -> FunctionDec x in
+  let vardec =
+    let var_id = ws *> string "var" *> id in
+    let var_exp = ws *> string ":=" *> exp in
+    var_id >>= fun var_id ->
+    ty_option >>= fun ty ->
+    var_exp >>| fun exp ->
+    VarDec { name = var_id; escape = escape_init (); typ = ty; init = exp }
+  in
+  choice [ typedecs; funcdecs; vardec ]
+
+
+
+
+ (* ********************************************************************* *)
+let%expect_test _ =
+  print_endline (show_dec (parse dec {|var lol := int|}));
+  [%expect
+    {|
+          Ast.VarDec {name = "lol"; escape = ref (true); typ = None;
+            init = (Ast.VarExp (Ast.SimpleVar "int"))} |}]
+
+let%expect_test _ =
+  print_endline
+    (show_dec (parse dec {|function x() = f () function f () = x ()|}));
+  [%expect
+    {|
+                    (Ast.FunctionDec
+                       [{ Ast.fname = "x"; params = []; result = None;
+                          body = Ast.CallExp {func = "f"; args = []} };
+                         { Ast.fname = "f"; params = []; result = None;
+                           body = Ast.CallExp {func = "x"; args = []} }
+                         ]) |}]
+
+let%expect_test _ =
+  print_endline (show_dec (parse dec {| type lol = x|}));
+  [%expect
+    {|
+                              (Ast.TypeDec [{ Ast.tname = "lol"; ty = (Ast.NameTy "x") }]) |}]
+
+let%expect_test _ =
+  print_endline (show_dec (parse dec {| type lol = x type x = lol type s = n|}));
+  [%expect
+    {|
+          (Ast.TypeDec
+             [{ Ast.tname = "lol"; ty = (Ast.NameTy "x") };
+               { Ast.tname = "x"; ty = (Ast.NameTy "lol") };
+               { Ast.tname = "s"; ty = (Ast.NameTy "n") }]) |}]
+
+(*var*)
+
+let%expect_test _ =
+  print_endline (show_var (parse var "  name"));
+  [%expect {| (Ast.SimpleVar "name") |}]
+
+let%expect_test _ =
+  print_endline (show_var (parse var "  name . name"));
+  [%expect {| (Ast.FieldVar ((Ast.SimpleVar "name"), "name")) |}]
+
+let%expect_test _ =
+  print_endline (show_var (parse var "  name . name. name  .name"));
+  [%expect
+    {|
+                 (Ast.FieldVar (
+                    (Ast.FieldVar ((Ast.FieldVar ((Ast.SimpleVar "name"), "name")), "name")),
+                    "name")) |}]
+
+let%expect_test _ =
+  print_endline (show_var (parse var "  name [ ].name [ ] [ ] . name [ ]"));
+  [%expect
+    {|
+                 (Ast.SubscriptVar (
+                    (Ast.FieldVar (
+                       (Ast.SubscriptVar (
+                          (Ast.SubscriptVar (
+                             (Ast.FieldVar (
+                                (Ast.SubscriptVar ((Ast.SimpleVar "name"), Ast.NilExp)),
+                                "name")),
+                             Ast.NilExp)),
+                          Ast.NilExp)),
+                       "name")),
+                    Ast.NilExp)) |}]
+
+(* exp *)
 
 let%expect_test _ =
   print_endline (show_exp (parse exp "var"));
@@ -232,50 +339,161 @@ let%expect_test _ =
   print_endline (show_exp (parse exp {| (lol, x := 5, 134  , "lol"  )|}));
   [%expect
     {|
-        Ast.CallExp {func = "";
-          args =
-          [(Ast.VarExp (Ast.SimpleVar "lol"));
-            Ast.AssignExp {var = "x"; exp = (Ast.IntExp 5)}; (Ast.IntExp 134);
-            (Ast.StringExp "lol")]} |}]
+                          (Ast.SeqExp
+                             [(Ast.VarExp (Ast.SimpleVar "lol"));
+                               Ast.AssignExp {var = "x"; exp = (Ast.IntExp 5)}; (Ast.IntExp 134);
+                               (Ast.StringExp "lol")]) |}]
 
 let%expect_test _ =
   print_endline (show_exp (parse exp {|lol ( 3, "lol"   , x  := 3, nil  )|}));
   [%expect
     {|
-      Ast.CallExp {func = "lol";
-        args =
-        [(Ast.IntExp 3); (Ast.StringExp "lol");
-          Ast.AssignExp {var = "x"; exp = (Ast.IntExp 3)}; Ast.NilExp]} |}]
+                        Ast.CallExp {func = "lol";
+                          args =
+                          [(Ast.IntExp 3); (Ast.StringExp "lol");
+                            Ast.AssignExp {var = "x"; exp = (Ast.IntExp 3)}; Ast.NilExp]} |}]
 
 let%expect_test _ =
   print_endline (show_exp (parse exp {| if 4 then nil else 4|}));
   [%expect
     {|
-      Ast.IfExp {test = (Ast.IntExp 4); then' = Ast.NilExp;
-        else' = (Some (Ast.IntExp 4))} |}]
+                        Ast.IfExp {test = (Ast.IntExp 4); then' = Ast.NilExp;
+                          else' = (Some (Ast.IntExp 4))} |}]
 
 let%expect_test _ =
   print_endline (show_exp (parse exp {| if 4 then nil|}));
   [%expect
     {|
-      Ast.IfExp {test = (Ast.IntExp 4); then' = Ast.NilExp; else' = None} |}]
+                        Ast.IfExp {test = (Ast.IntExp 4); then' = Ast.NilExp; else' = None} |}]
 
 let%expect_test _ =
   print_endline (show_exp (parse exp {| while lol do 4|}));
   [%expect
     {|
-    Ast.WhileExp {test = (Ast.VarExp (Ast.SimpleVar "lol"));
-      body = (Ast.IntExp 4)} |}]
+                      Ast.WhileExp {test = (Ast.VarExp (Ast.SimpleVar "lol"));
+                        body = (Ast.IntExp 4)} |}]
 
 let%expect_test _ =
   print_endline (show_exp (parse exp {| for i := 4 to 5 do 6|}));
   [%expect
     {|
-    Ast.ForExp {var = "i"; escape = ref (true); lo = (Ast.IntExp 4);
-      hi = (Ast.IntExp 5); body = (Ast.IntExp 6)} |}]
+                      Ast.ForExp {var = "i"; escape = ref (true); lo = (Ast.IntExp 4);
+                        hi = (Ast.IntExp 5); body = (Ast.IntExp 6)} |}]
 
 let%expect_test _ =
   print_endline (show_exp (parse exp {| while 4 do break|}));
   [%expect
     {|
-      Ast.WhileExp {test = (Ast.IntExp 4); body = Ast.BreakExp} |}]
+                        Ast.WhileExp {test = (Ast.IntExp 4); body = Ast.BreakExp} |}]
+
+let%expect_test _ =
+  print_endline (show_exp (parse exp {| name[length] of nil|}));
+  [%expect
+    {|
+                            Ast.ArrayExp {typ = "name"; size = (Ast.VarExp (Ast.SimpleVar "length"));
+                              init = Ast.NilExp} |}]
+
+(* vardec *)
+let%expect_test _ =
+  print_endline (show_dec (parse vardec {| var x: int := nil|}));
+  [%expect
+    {|
+                                      Ast.VarDec {name = "x"; escape = ref (true); typ = (Some "int");
+                                        init = Ast.NilExp} |}]
+
+let%expect_test _ =
+  print_endline (show_dec (parse vardec {| var x  := 4|}));
+  [%expect
+    {|
+                                    Ast.VarDec {name = "x"; escape = ref (true); typ = None;
+                                      init = (Ast.IntExp 4)} |}]
+
+(* tyfield *)
+let%expect_test _ =
+  print_endline (show_field (parse tyfield {| fiedl: int|}));
+  [%expect
+    {|
+                                              { Ast.name = "fiedl"; escape = ref (true); typ = "int" } |}]
+
+(* fields *)
+let%expect_test _ =
+  List.iter
+    ~f:(fun x -> print_endline @@ show_field x)
+    (parse fields {| first: int, second: double, third: string|});
+  [%expect
+    {|
+                                                      { Ast.name = "first"; escape = ref (true); typ = "int" }
+                                                      { Ast.name = "second"; escape = ref (true); typ = "double" }
+                                                      { Ast.name = "third"; escape = ref (true); typ = "string" } |}]
+
+(* typedec *)
+let%expect_test _ =
+  print_endline (show_typedec (parse typedec {| type lol = int|}));
+  [%expect
+    {|
+                                                              { Ast.tname = "lol"; ty = (Ast.NameTy "int") } |}]
+
+let%expect_test _ =
+  print_endline (show_typedec (parse typedec {| type lol = {}|}));
+  [%expect
+    {|
+                                                                      { Ast.tname = "lol"; ty = (Ast.RecordTy []) } |}]
+
+let%expect_test _ =
+  print_endline
+    (show_typedec
+       (parse typedec {| type lol = {l: first, s: second, third: int}|}));
+  [%expect
+    {|
+                                                                              { Ast.tname = "lol";
+                                                                                ty =
+                                                                                (Ast.RecordTy
+                                                                                   [{ Ast.name = "l"; escape = ref (true); typ = "first" };
+                                                                                     { Ast.name = "s"; escape = ref (true); typ = "second" };
+                                                                                     { Ast.name = "third"; escape = ref (true); typ = "int" }])
+                                                                                } |}]
+
+let%expect_test _ =
+  print_endline (show_typedec (parse typedec {| type lol = array of lol|}));
+  [%expect
+    {|
+                                                                      { Ast.tname = "lol"; ty = (Ast.ArrayTy "lol") } |}]
+
+(*fundec *)
+let%expect_test _ =
+  print_endline (show_fundec (parse fundec {| function lol () = 1|}));
+  [%expect
+    {|
+                                                                              { Ast.fname = "lol"; params = []; result = None; body = (Ast.IntExp 1) } |}]
+
+let%expect_test _ =
+  print_endline
+    (show_fundec (parse fundec {| function lol (lol: int, some: none ) = 10|}));
+  [%expect
+    {|
+                                                                        { Ast.fname = "lol";
+                                                                          params =
+                                                                          [{ Ast.name = "lol"; escape = ref (true); typ = "int" };
+                                                                            { Ast.name = "some"; escape = ref (true); typ = "none" }];
+                                                                          result = None; body = (Ast.IntExp 10) } |}]
+
+let%expect_test _ =
+  print_endline (show_fundec (parse fundec {| function lol (): int = 1|}));
+  [%expect
+    {|
+                                                                              { Ast.fname = "lol"; params = []; result = (Some "int");
+                                                                                body = (Ast.IntExp 1) } |}]
+
+let%expect_test _ =
+  print_endline
+    (show_fundec
+       (parse fundec
+          {| function lol (lol: int, some: none, option: lol) : int = 1|}));
+  [%expect
+    {|
+                                                                              { Ast.fname = "lol";
+                                                                                params =
+                                                                                [{ Ast.name = "lol"; escape = ref (true); typ = "int" };
+                                                                                  { Ast.name = "some"; escape = ref (true); typ = "none" };
+                                                                                  { Ast.name = "option"; escape = ref (true); typ = "lol" }];
+                                                                                result = (Some "int"); body = (Ast.IntExp 1) } |}]
