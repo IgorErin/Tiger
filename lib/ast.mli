@@ -47,12 +47,3 @@ and fundec = {
 and typedec = { tname : Id.t; ty : ty }
 and ty = NameTy of Id.t | RecordTy of field list | ArrayTy of Id.t
 and field = { name : Id.t; escape : bool ref; typ : Id.t }
-
-val var_equal : var -> var -> bool
-val exp_equal : exp -> exp -> bool
-val oper_equal : oper -> oper -> bool
-val dec_equal : dec -> dec -> bool
-val fundec_equal : fundec -> fundec -> bool
-val typedec_equal : typedec -> typedec -> bool
-val ty_equla : ty -> ty -> bool
-val field_equal : field -> field -> bool
