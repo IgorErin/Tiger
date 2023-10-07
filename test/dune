@@ -1,2 +1,5 @@
-(test
- (name Tiger))
+((library
+ (name Tiger_tests)
+ (public_name Tiger_tests )
+ (libraries Tiger))
+ (name Test))

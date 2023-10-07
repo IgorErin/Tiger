@@ -20,6 +20,9 @@ let parse p str =
 
 let escape_init () = ref true
 
+let true' = IntExp 1 
+let false' = IntExp 0
+
 let exp =
   fix (fun exp ->
       let var =
@@ -250,16 +253,26 @@ let exp =
           fold <$> many (inner *> p)
           (* inner *> p >>| cons init *)
         in
+        let create_or left right = IfExp {test = left; then' = true' ; else' = Some right;} in
+        let create_and left right = IfExp {test = left; then' = right; else' = Some false' } in 
+        let create_logic inner create p = 
+          p >>= fun init ->
+          let fold ls = List.fold ls ~init ~f:create in
+          fold <$> many (inner *> p)
+          in
         let create_inner s = ws *> string s *> ws *> return () in
         create (create_inner "*") TimesOp non_op
         |> create (create_inner "/") DivideOp
         |> create (create_inner "+") PlusOp
         |> create (create_inner "-") MinusOp
+        |> create (create_inner "=") EqOp
+        |> create (create_inner "<>") NeqOp 
         |> create (create_inner ">") GtOp
-        |> create (create_inner "<") LtOp
+        |> create (create_inner "<") LtOp   
         |> create (create_inner ">=") GeOp
         |> create (create_inner "<=") LeOp
-        |> create (create_inner "=") EqOp
+        |> create_logic (create_inner "&") create_and
+        |> create_logic (create_inner "|") create_or
       in
       
       bin_op_exp (*TODO(start with let_exp)*))
