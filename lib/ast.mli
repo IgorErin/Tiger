@@ -47,3 +47,5 @@ and fundec = {
 and typedec = { tname : Id.t; ty : ty }
 and ty = NameTy of Id.t | RecordTy of field list | ArrayTy of Id.t
 and field = { name : Id.t; escape : bool ref; typ : Id.t }
+
+type t = exp

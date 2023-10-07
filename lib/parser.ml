@@ -2,6 +2,10 @@ open Angstrom
 open Ast
 open! Base
 
+type t = string 
+
+let of_string x = x
+
 let ws =
   skip_while (function '\x20' | '\x0a' | '\x0d' | '\x09' -> true | _ -> false)
 
@@ -276,4 +280,9 @@ let exp =
       
       bin_op_exp (*TODO(start with let_exp)*))
 
-    
+
+let parse str =
+   parse_string ~consume:All exp str 
+   |> function 
+      | Ok x -> Either.first x
+      | Error m -> Either.second m
