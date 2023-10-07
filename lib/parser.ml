@@ -1,7 +1,6 @@
 open Angstrom
 open Ast
 open! Base
-open Stdio
 
 let ws =
   skip_while (function '\x20' | '\x0a' | '\x0d' | '\x09' -> true | _ -> false)
