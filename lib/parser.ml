@@ -66,18 +66,18 @@ let exp =
         leftq *> text <* rightq >>| fun result -> StringExp result
       in
 
-      let seq =
+      let seq s =
         let obr = ws *> char '(' in
-        let s = ws *> char ',' <* ws in
+        let s = ws *> char s <* ws in
         let exps = sep_by s exp in
         let cbr = ws *> char ')' in
         obr *> exps <* cbr
       in
-      let seq_exp = seq >>| fun result -> SeqExp result in
+      let seq_exp = seq ';' >>| fun result -> SeqExp result in
       let fcall_exp =
         let id = ws *> id in
         let seq = seq in
-        both id seq >>| fun (i, s) -> CallExp { func = i; args = s }
+        both id (seq ',') >>| fun (i, s) -> CallExp { func = i; args = s }
       in
 
       let assign_exp =

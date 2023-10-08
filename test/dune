@@ -1,2 +1,4 @@
 (test
- (name Tiger))
+ (name tiger_test)
+ (modules tiger_test parser)
+ (libraries alcotest Tiger))

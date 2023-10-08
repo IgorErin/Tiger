@@ -5,9 +5,9 @@
 
 (library
  (name Tiger)
- (modules_without_implementation ast)
+ (public_name Tiger)
  (modules ast id parser)
  (libraries core angstrom)
  (inline_tests)
  (preprocess
-  (pps ppx_expect ppx_sexp_conv ppx_inline_test ppx_assert ppx_deriving.show)))
+  (pps ppx_expect ppx_sexp_conv ppx_inline_test ppx_assert ppx_deriving.show ppx_deriving.eq)))
