@@ -1,6 +1,6 @@
 (* TODO () how to reference from tests ??? *)
 
-type var = 
+type var =
   | SimpleVar of Id.t
   | FieldVar of var * Id.t
   | SubscriptVar of var * exp
