@@ -286,6 +286,6 @@ let exp =
       bin_op_exp (*TODO(start with let_exp)*))
 
 let parse str =
-  parse_string ~consume:All exp str |> function
+  parse_string ~consume:All (exp <* ws) str |> function
   | Ok x -> Either.first x
   | Error m -> Either.second m
