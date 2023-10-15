@@ -1,25 +1,18 @@
-name: Builds, tests & co
+name: Builds, tests
 
 on:
-  pull_request:
   push:
-  schedule:
-    # Prime the caches every Monday
-    - cron: 0 1 * * MON
-
-permissions: read-all
 
 jobs:
   build:
     strategy:
-      fail-fast: false
       matrix:
         os:
           - macos-latest
           - ubuntu-latest
           - windows-latest
         ocaml-compiler:
-          - "5.1"
+          - "4.14.4"
 
     runs-on: ${{ matrix.os }}
 
