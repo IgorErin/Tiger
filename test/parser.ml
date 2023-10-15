@@ -643,3 +643,55 @@ let%expect_test _ =
                              ])
                         ];
                       body = (Ast.SeqExp [])} |}]
+
+let%expect_test _ =
+create_test
+  {| let function f(a:int, b: int, c: int) = 
+    (print_int(a + c);
+    let var j := a + b
+        var a := "hello"
+    in (print(a); print_int(j))
+  end;
+  print_int(b)) in () end |};
+[%expect
+  {|
+                  Ast.LetExp {
+                    decs =
+                    [(Ast.FunctionDec
+                        [{ Ast.fname = "f";
+                           params =
+                           [{ Ast.name = "a"; escape = ref (true); typ = "int" };
+                             { Ast.name = "b"; escape = ref (true); typ = "int" };
+                             { Ast.name = "c"; escape = ref (true); typ = "int" }];
+                           result = None;
+                           body =
+                           (Ast.SeqExp
+                              [Ast.CallExp {func = "print_int";
+                                 args =
+                                 [Ast.OpExp {left = (Ast.VarExp (Ast.SimpleVar "a"));
+                                    oper = Ast.PlusOp; right = (Ast.VarExp (Ast.SimpleVar "c"))}
+                                   ]};
+                                Ast.LetExp {
+                                  decs =
+                                  [Ast.VarDec {name = "j"; escape = ref (true); typ = None;
+                                     init =
+                                     Ast.OpExp {left = (Ast.VarExp (Ast.SimpleVar "a"));
+                                       oper = Ast.PlusOp;
+                                       right = (Ast.VarExp (Ast.SimpleVar "b"))}};
+                                    Ast.VarDec {name = "a"; escape = ref (true); typ = None;
+                                      init = (Ast.StringExp "hello")}
+                                    ];
+                                  body =
+                                  (Ast.SeqExp
+                                     [Ast.CallExp {func = "print";
+                                        args = [(Ast.VarExp (Ast.SimpleVar "a"))]};
+                                       Ast.CallExp {func = "print_int";
+                                         args = [(Ast.VarExp (Ast.SimpleVar "j"))]}
+                                       ])};
+                                Ast.CallExp {func = "print_int";
+                                  args = [(Ast.VarExp (Ast.SimpleVar "b"))]}
+                                ])
+                           }
+                          ])
+                      ];
+                    body = (Ast.SeqExp [])} |}]
