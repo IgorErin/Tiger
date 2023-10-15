@@ -241,10 +241,8 @@ let exp =
             assign_exp;
             string_exp;
             number_exp;
-            (* TODO(strange error: end_of_input while choice exist) *)
             nil_exp;
             var_exp;
-            (* TODO(strange error: end_of_input while choice exist) *)
             unar_minus;
           ]
       in
@@ -283,7 +281,24 @@ let exp =
         |> create_logic (create_inner "|") create_or
       in
 
-      bin_op_exp (*TODO(start with let_exp)*))
+      choice
+        [
+          let_exp;
+          array_exp;
+          break_exp;
+          for_exp;
+          while_exp;
+          if_exp;
+          fcall_exp;
+          seq_exp;
+          assign_exp;
+          string_exp;
+          bin_op_exp;
+          number_exp;
+          nil_exp;
+          var_exp;
+          unar_minus;
+        ])
 
 let parse str =
   parse_string ~consume:All (exp <* ws) str |> function

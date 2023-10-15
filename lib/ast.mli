@@ -4,7 +4,7 @@ type var =
   | SimpleVar of Id.t
   | FieldVar of var * Id.t
   | SubscriptVar of var * exp
-[@@deriving show, eq]
+[@@deriving show]
 
 and exp =
   | VarExp of var
