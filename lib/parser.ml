@@ -14,7 +14,7 @@ let point = ws *> char '.'
 let id =
   ws
   *> take_while1 (function 'a' .. 'z' | 'A' .. 'Z' | '_' -> true | _ -> false)
-  >>| Id.of_string
+  >>| Symbol.symbol
 
 let parse p str =
   parse_string ~consume:All p str |> function
