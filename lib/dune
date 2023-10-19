@@ -6,7 +6,8 @@
 (library
  (name Tiger)
  (public_name Tiger)
- (modules ast symbol parser types)
+ (modules_without_implementation env)
+ (modules ast symbol parser types env)
  (libraries core angstrom)
  (inline_tests)
  (preprocess
