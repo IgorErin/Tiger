@@ -13,7 +13,8 @@ let%expect_test _ =
 
 let%expect_test _ =
   create_test "var. var ";
-  [%expect {| (Ast.VarExp (Ast.FieldVar ((Ast.SimpleVar (0, "var")), (0, "var")))) |}]
+  [%expect
+    {| (Ast.VarExp (Ast.FieldVar ((Ast.SimpleVar (0, "var")), (0, "var")))) |}]
 
 let%expect_test _ =
   create_test "var. var .var";
@@ -117,7 +118,8 @@ let%expect_test _ =
 
 let%expect_test _ =
   create_test {| (x:= 4 ) |};
-  [%expect {| (Ast.SeqExp [Ast.AssignExp {var = (0, "x"); exp = (Ast.IntExp 4)}]) |}]
+  [%expect
+    {| (Ast.SeqExp [Ast.AssignExp {var = (0, "x"); exp = (Ast.IntExp 4)}]) |}]
 
 let%expect_test _ =
   create_test {| x := 2 |};
