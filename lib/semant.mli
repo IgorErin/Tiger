@@ -1,8 +1,7 @@
-type venv = Env.enventry
-type tenv = Types.ty Symbol.table
 type expty = { exp : Translate.exp; ty : Types.ty }
+type env = { vars : Env.venv; funs : Env.fenv; types : Env.tenv }
 
-val transVar : venv -> tenv -> Ast.var -> expty
-val transExp : venv -> tenv -> Ast.exp -> expty
-val transDec : venv -> tenv -> Ast.dec -> venv * tenv
-val transTy : tenv -> Ast.ty -> expty
+val transVar : env -> Ast.var -> expty
+val transExp : env -> Ast.exp -> expty
+val transDec : env -> Ast.dec -> env
+val transTy : Env.tenv -> Ast.ty -> expty

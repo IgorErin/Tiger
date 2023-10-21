@@ -2,6 +2,7 @@ type t [@@deriving show]
 
 val symbol : string -> t
 val name : t -> string
+val equal : t -> t -> bool
 
 type 'a table
 

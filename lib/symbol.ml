@@ -3,6 +3,8 @@ type t = int * string [@@deriving show]
 open Base
 
 let count = ref 0
+
+(* map string -> int. unequal in for string *)
 let hashtbl = Hashtbl.create (module String)
 
 let symbol name =
@@ -16,6 +18,9 @@ let symbol name =
 
 let symbol name : t = (0, name)
 let name (_, name) = name
+let equal (fn, fs) (sn, ss) = Int.equal fn sn && String.equal fs ss
+
+(* map int -> 'a *)
 
 type 'a table = 'a Map.M(Int).t
 

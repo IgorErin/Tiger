@@ -1,9 +1,12 @@
-type access
-type ty
+(* domen *)
+type domen
+type fentry = { formals : domen list; result : domen }
+type venv = domen Symbol.table
+type fenv = fentry Symbol.table
+type tenv = domen Symbol.table
 
-type enventry =
-  | VarEntry of { ty : ty }
-  | FunEntry of { formals : ty list; resul : ty }
-
-val base_venv : enventry Symbol.table
-val base_tenv : ty Symbol.table
+val base_venv : domen Symbol.table
+val base_fenv : fentry Symbol.table
+val base_tenv : domen Symbol.table
+val domen_of_type : Types.ty -> domen
+val type_of_domen : domen -> Types.ty
