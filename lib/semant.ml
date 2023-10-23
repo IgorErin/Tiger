@@ -16,19 +16,34 @@ module Check = struct
   let equal3 fst snd thd =
     if Types.equal fst snd && Types.equal snd thd then fst
     else failwith "Types must be equal"
+
+  let equal_ex f s =
+    let _ = equal f s in
+    ()
 end
 
 let create_unit_exp ty = { exp = (); ty }
 let get_type { ty; _ } = ty
 let transVar = failwith ""
+let ( >> ) f g x = f x |> g
 
-let transExp env expr =
+let transExp (env : env) _ =
   let rec trexp = function
-    | VarExp v -> transVar env v (* TODO *)
+    | VarExp v -> trvar env.types v (* TODO *)
     | NilExp -> create_unit_exp Types.Nil
     | IntExp _ -> create_unit_exp Types.Int
     | StringExp _ -> create_unit_exp Types.String
-    | CallExp _ -> failwith ""
+    | CallExp { func; args } -> (
+        Symbol.look env.funs func |> function
+        | Some func ->
+            let argst = func.formals in
+            let args_types = List.map (trexp >> get_type) args in
+            let _ = List.iter2 Check.equal_ex func.formals args_types in
+            create_unit_exp func.result
+        | None ->
+            failwith
+            @@ Printf.sprintf "Undefinded function: %s"
+            @@ Symbol.name func)
     | OpExp { left; oper = _; right } ->
         let _ = trexp left |> get_type |> Check.int in
         let _ = trexp right |> get_type |> Check.int in
@@ -38,10 +53,7 @@ let transExp env expr =
         else
           (* take last exp type. mb check that before unit's ? *)
           List.rev ls |> List.hd |> trexp
-    | AssignExp { var; exp } ->
-        let v = transVar env var |> get_type in
-        let e = trexp exp |> get_type in
-        Check.equal v e |> create_unit_exp
+    | AssignExp { var = _; _ } -> failwith "TODO"
     | IfExp { test; then'; else' } -> (
         let _ = trexp test |> get_type |> Check.int in
         let t = trexp then' |> get_type in
@@ -54,13 +66,8 @@ let transExp env expr =
         let _ = trexp test |> get_type |> Check.int in
         let _ = trexp body |> get_type |> Check.unit in
         create_unit_exp Types.Unit
-    | ForExp { var; escape = _; lo; hi; body } ->
-        let var = transVar env var in
-        (* TODO handle var type *)
-        let lo = trexp lo |> get_type in
-        let hi = trexp hi |> get_type in
-        let _ = trexp body |> get_type |> Check.unit in
-        Check.equal3 var lo hi |> create_unit_exp
+    | ForExp { var = _; escape = _; lo = _; hi = _; body = _ } ->
+        failwith "TODO"
     | BreakExp -> Types.Unit |> create_unit_exp
     | _ -> failwith "Not implemented"
   and trvar venv v =
