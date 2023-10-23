@@ -158,12 +158,56 @@ and transDec env = function
       let it = transExp env init |> get_type in
       let vars = Symbol.enter env.vars name it in
       { env with vars }
-  | _ -> failwith "Not implemented"
+  | TypeDec [ { tname; ty } ] ->
+      let ty = transTy env ty in
+      let types = Symbol.enter env.types tname ty in
+      { env with types }
+  | TypeDec ls ->
+      let open Types in
+      let add env name t = Symbol.enter env name t in
+      let names = List.map (fun { tname; ty = _ } -> tname) ls in
+      let types =
+        List.fold_left
+          (fun env tname ->
+            let ty = Name (tname, ref None) in
+            add env tname ty)
+          env.types names
+      in
+      failwith "TODO(rec types ???)"
+  | FunctionDec ls ->
+      let open Types in
+      (* helpers*)
+      let ty_of_opt = function
+        | Some t -> t
+        | _ -> failwith "Type not found."
+      in
+      let ty_of_symbol s = Symbol.look env.types s |> ty_of_opt in
+      let map_result = function Some t -> ty_of_symbol t | None -> Unit in
+      let map_param x = ty_of_symbol x.Ast.typ in
+      (* create head env.funs *)
+      let iterf funs { fname; params; result; _ } =
+        let formals = List.map map_param params in
+        let result = map_result result in
+        Symbol.enter funs fname Env.{ formals; result }
+      in
+      let funs = List.fold_left iterf env.funs ls in
+      let env = { env with funs } in
+      (* travers body, check return type *)
+      let _ =
+        List.iter
+          (fun { body; result; _ } ->
+            let bt = transExp env body |> get_type in
+            let rt = map_result result in
+            Check.equal bt rt)
+          ls
+      in
+      env
 
-let transTy env t =
+and transTy env t =
   let ty_of_opt = function Some x -> x | None -> failwith "Unknon type" in
   let get_type env s = ty_of_opt @@ Symbol.look env.types s in
-  let rec run = function
+  (* simplify code *)
+  let run = function
     | NameTy n -> (
         Symbol.look env.types n |> function
         | Some x -> x
