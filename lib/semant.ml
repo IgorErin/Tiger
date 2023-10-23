@@ -21,6 +21,16 @@ module Check = struct
     equal fst snd;
     equal snd thd;
     fst
+
+  let nil_record_constr fst snd =
+    let open Types in
+    if Types.equal fst snd then fst
+    else
+      match (fst, snd) with
+      | Nil, (Record _ as r) | (Record _ as r), Nil -> r
+      | _ -> failwith "Nil and record. Not equal types."
+
+  let get_unique () = ref ()
 end
 
 let create_unit_exp ty = { exp = (); ty }
@@ -140,8 +150,7 @@ and transDec env = function
       let vt =
         Symbol.look env.types typ
         |> (function Some typ -> typ | None -> failwith "Unknown var type")
-        |> Check.equal_tr it
-        (* and check*)
+        |> Check.nil_record_constr it
       in
       let vars = Symbol.enter env.vars name vt in
       { env with vars }
@@ -151,4 +160,23 @@ and transDec env = function
       { env with vars }
   | _ -> failwith "Not implemented"
 
-let transTy = failwith ""
+let transTy env t =
+  let ty_of_opt = function Some x -> x | None -> failwith "Unknon type" in
+  let get_type env s = ty_of_opt @@ Symbol.look env.types s in
+  let rec run = function
+    | NameTy n -> (
+        Symbol.look env.types n |> function
+        | Some x -> x
+        | None -> failwith "Unknon type")
+    | RecordTy fl ->
+        let fl =
+          List.map (fun { name; typ; _ } -> (name, get_type env typ)) fl
+        in
+        let unique = Check.get_unique () in
+        Types.Record (fl, unique)
+    | ArrayTy s ->
+        let t = get_type env s in
+        let unique = Check.get_unique () in
+        Array (t, unique)
+  in
+  run t
