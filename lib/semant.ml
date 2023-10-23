@@ -184,24 +184,39 @@ and transDec env = function
       let ty_of_symbol s = Symbol.look env.types s |> ty_of_opt in
       let map_result = function Some t -> ty_of_symbol t | None -> Unit in
       let map_param x = ty_of_symbol x.Ast.typ in
-      (* create head env.funs *)
-      let iterf funs { fname; params; result; _ } =
-        let formals = List.map map_param params in
-        let result = map_result result in
-        Symbol.enter funs fname Env.{ formals; result }
+      (* create env.funs be heads *)
+      let funs =
+        List.fold_left
+          (fun funs { fname; params; result; _ } ->
+            let formals = List.map map_param params in
+            let result = map_result result in
+            Symbol.enter funs fname Env.{ formals; result })
+          env.funs ls
       in
-      let funs = List.fold_left iterf env.funs ls in
-      let env = { env with funs } in
+      (* map params to new env.vars *)
+      let mod_vars params =
+        List.fold_left
+          (fun vars { name; typ; _ } ->
+            let ty = ty_of_symbol typ in
+            Symbol.enter vars name ty)
+          env.vars params
+      in
       (* travers body, check return type *)
       let _ =
         List.iter
-          (fun { body; result; _ } ->
+          (fun { body; result; params; _ } ->
+            (* for each funs
+               1) add params and funs to env.vars
+               2) check body
+               3) compare body and result type *)
+            let vars = mod_vars params in
+            let env = { env with funs; vars } in
             let bt = transExp env body |> get_type in
             let rt = map_result result in
             Check.equal bt rt)
           ls
       in
-      env
+      { env with funs }
 
 and transTy env t =
   let ty_of_opt = function Some x -> x | None -> failwith "Unknon type" in
