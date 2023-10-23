@@ -11,15 +11,16 @@ module Check = struct
     | _ -> failwith "Type must be Unit"
 
   let equal fst snd =
-    if Types.equal fst snd then fst else failwith "Types must be equal"
+    if Types.equal fst snd then () else failwith "Types must be equal"
 
-  let equal3 fst snd thd =
-    if Types.equal fst snd && Types.equal snd thd then fst
-    else failwith "Types must be equal"
+  let equal_tr fst snd =
+    equal fst snd;
+    fst
 
-  let equal_ex f s =
-    let _ = equal f s in
-    ()
+  let equal3_tr fst snd thd =
+    equal fst snd;
+    equal snd thd;
+    fst
 end
 
 let create_unit_exp ty = { exp = (); ty }
@@ -27,7 +28,7 @@ let get_type { ty; _ } = ty
 let transVar = failwith ""
 let ( >> ) f g x = f x |> g
 
-let transExp (env : env) _ =
+let rec transExp (env : env) _ =
   let rec trexp = function
     | VarExp v -> trvar env.types v (* TODO *)
     | NilExp -> create_unit_exp Types.Nil
@@ -38,7 +39,7 @@ let transExp (env : env) _ =
         | Some func ->
             let argst = func.formals in
             let args_types = List.map (trexp >> get_type) args in
-            let _ = List.iter2 Check.equal_ex func.formals args_types in
+            let _ = List.iter2 Check.equal func.formals args_types in
             create_unit_exp func.result
         | None ->
             failwith
@@ -53,23 +54,47 @@ let transExp (env : env) _ =
         else
           (* take last exp type. mb check that before unit's ? *)
           List.rev ls |> List.hd |> trexp
-    | AssignExp { var = _; _ } -> failwith "TODO"
+    | AssignExp { var; exp } -> (
+        let rty = trexp exp |> get_type in
+        let lty = Symbol.look env.vars var in
+        match lty with
+        | Some lty ->
+            let _ = Check.equal lty rty in
+            Types.Unit |> create_unit_exp
+        | None -> failwith "TODO")
     | IfExp { test; then'; else' } -> (
         let _ = trexp test |> get_type |> Check.int in
         let t = trexp then' |> get_type in
         match else' with
         | Some else' ->
             let e = trexp else' |> get_type in
-            Check.equal t e |> create_unit_exp
+            Check.equal_tr t e |> create_unit_exp
         | None -> Check.unit t |> create_unit_exp)
     | WhileExp { test; body } ->
         let _ = trexp test |> get_type |> Check.int in
         let _ = trexp body |> get_type |> Check.unit in
         create_unit_exp Types.Unit
-    | ForExp { var = _; escape = _; lo = _; hi = _; body = _ } ->
-        failwith "TODO"
+    | ForExp { var; escape = _; lo; hi; body } ->
+        let vart =
+          let lot = trexp lo |> get_type in
+          let hit = trexp hi |> get_type in
+          Check.equal_tr lot hit
+        in
+        let vars = Symbol.enter env.vars var vart in
+        let bodyt = transExp { env with vars } body |> get_type in
+        Check.unit bodyt |> create_unit_exp
     | BreakExp -> Types.Unit |> create_unit_exp
-    | _ -> failwith "Not implemented"
+    | LetExp { decs = _; body = _ } -> failwith "TODO decs"
+    | ArrayExp { typ; size; init } -> (
+        let _ = trexp size |> get_type |> Check.int in
+        let it = trexp init |> get_type in
+        let at = Symbol.look env.types typ in
+        match at with
+        | Some (Types.Array (ty, _) as at) ->
+            let _ = Check.equal it ty in
+            at |> create_unit_exp
+        | Some _ -> failwith "Must be array type."
+        | None -> failwith "Array type. Not found.")
   and trvar venv v =
     let field_type t m =
       match t with
@@ -80,7 +105,7 @@ let transExp (env : env) _ =
           | [ (_, t) ] -> t
           (* since fileds names must check transDec (invariant)*)
           | _ :: _ -> assert false)
-      | _ -> failwith "Fields contain only records"
+      | _ -> failwith "Must be record. Fields contain only records"
     in
     let array_type = function
       | Types.Array (t, _) -> t
@@ -109,5 +134,21 @@ let transExp (env : env) _ =
 
   failwith ""
 
-let transDec = failwith ""
+and transDec env = function
+  | VarDec { name; escape = _; typ = Some typ; init } ->
+      let it = transExp env init |> get_type in
+      let vt =
+        Symbol.look env.types typ
+        |> (function Some typ -> typ | None -> failwith "Unknown var type")
+        |> Check.equal_tr it
+        (* and check*)
+      in
+      let vars = Symbol.enter env.vars name vt in
+      { env with vars }
+  | VarDec { name; escape = _; typ = None; init } ->
+      let it = transExp env init |> get_type in
+      let vars = Symbol.enter env.vars name it in
+      { env with vars }
+  | _ -> failwith "Not implemented"
+
 let transTy = failwith ""
