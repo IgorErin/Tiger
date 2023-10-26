@@ -35,7 +35,7 @@ end
 
 let create_unit_exp ty = { exp = (); ty }
 let get_type { ty; _ } = ty
-let transVar = failwith ""
+let transVar _ = failwith ""
 let ( >> ) f g x = f x |> g
 
 let rec transExp (env : env) _ =
