@@ -5,22 +5,15 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (github IgorErin/Tiger))
 
-(authors "Author Name")
+(authors "Igor Erin")
 
-(maintainers "Maintainer Name")
+(maintainers "Igor Erin")
 
-(license LICENSE)
-
-(documentation https://url/to/documentation)
+(license MIT)
 
 (package
  (name Tiger)
- (synopsis "A short synopsis")
- (description "A longer description")
- (depends ocaml dune)
- (tags
-  (topics "to describe" your project)))
-
-; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
+ (synopsis "Tiger compiler")
+ (depends ocaml dune core angstrom ppx_deriving))
