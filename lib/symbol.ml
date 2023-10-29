@@ -4,7 +4,7 @@ open Base
 
 let count = ref 0
 
-(* map string -> int. unequal in for string *)
+(* map string -> int. unequal int for string *)
 let hashtbl = Hashtbl.create (module String)
 
 let symbol name =
@@ -16,7 +16,6 @@ let symbol name =
   let result = Hashtbl.find_or_add hashtbl name ~default in
   (result, name)
 
-let symbol name : t = (0, name)
 let name (_, name) = name
 let equal (fn, fs) (sn, ss) = Int.equal fn sn && String.equal fs ss
 

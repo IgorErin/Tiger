@@ -16,5 +16,5 @@ let equal fst snd =
   | Int, Int | String, String | Nil, Nil | Unit, Unit -> true
   | Record (_, fst), Record (_, snd) | Array (_, fst), Array (_, snd) ->
       phys_equal fst snd
-  | Name _, Name _ -> failwith "I dont know"
+  | Name _, _ | _, Name _ -> failwith "Name type in equal"
   | _ -> false
