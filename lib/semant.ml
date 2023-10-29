@@ -1,4 +1,4 @@
-open Ast
+open Parsetree
 
 type expty = { exp : Translate.exp; ty : Types.ty }
 
@@ -208,7 +208,7 @@ and transDec env = function
       in
       let ty_of_symbol s = Symbol.look env.types s |> ty_of_opt in
       let map_result = function Some t -> ty_of_symbol t | None -> Unit in
-      let map_param x = ty_of_symbol x.Ast.typ in
+      let map_param x = ty_of_symbol x.Parsetree.typ in
       (* create env.funs be heads *)
       let funs =
         List.fold_left
@@ -260,3 +260,7 @@ and transTy env t =
         Array (t, unique)
   in
   run t
+
+let type_check exp =
+  let (_ : Types.ty) = transExp Env.base_env exp |> get_type in
+  ()

@@ -2,6 +2,7 @@ open Env
 
 type expty = { exp : Translate.exp; ty : Types.ty }
 
-val transExp : env -> Ast.exp -> expty
-val transDec : env -> Ast.dec -> env
-val transTy : env -> Ast.ty -> Types.ty
+val transExp : env -> Parsetree.exp -> expty
+val transDec : env -> Parsetree.dec -> env
+val transTy : env -> Parsetree.ty -> Types.ty
+val type_check : Parsetree.exp -> unit

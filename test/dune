@@ -1,6 +1,6 @@
 (library
  (name tiger_test)
- (modules parser semant)
+ (modules parser)
  (libraries Tiger)
  (inline_tests)
  (preprocess
