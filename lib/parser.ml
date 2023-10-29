@@ -22,8 +22,8 @@ let parse p str =
   | Error m -> failwith m
 
 let escape_init () = ref true
-let true' = IntExp 1
-let false' = IntExp 0
+let true_ = IntExp 1
+let false_ = IntExp 0
 
 let exp =
   fix (fun exp ->
@@ -87,13 +87,12 @@ let exp =
       in
 
       let if_exp =
-        let _if = ws *> string "if" *> ws *> exp in
-        let _then = ws *> string "then" *> ws *> exp in
-        let if_then_exp_cont _else =
-          _if >>= fun test_exp ->
-          _then >>= fun then_exp ->
-          _else >>| fun else_exp ->
-          IfExp { test = test_exp; then' = then_exp; else' = else_exp }
+        let if_ = ws *> string "if" *> ws *> exp in
+        let then_ = ws *> string "then" *> ws *> exp in
+        let if_then_exp_cont else_ =
+          if_ >>= fun test ->
+          then_ >>= fun then_ ->
+          else_ >>| fun else_ -> IfExp { test; then_; else_ }
         in
         let _else = ws *> string "else" *> ws *> exp >>| Option.some in
         let option_else = _else <|> return None in
@@ -112,18 +111,11 @@ let exp =
         let lb_exp = ws *> string ":=" *> ws *> exp in
         let ub_exp = ws *> string "to" *> ws *> exp in
         let do_exp = ws *> string "do" *> ws *> exp in
-        for_id >>= fun for_id ->
-        lb_exp >>= fun lb_exp ->
-        ub_exp >>= fun ub_exp ->
-        do_exp >>| fun do_exp ->
-        ForExp
-          {
-            var = for_id;
-            escape = escape_init ();
-            lo = lb_exp;
-            hi = ub_exp;
-            body = do_exp;
-          }
+        for_id >>= fun var ->
+        lb_exp >>= fun lb ->
+        ub_exp >>= fun hb ->
+        do_exp >>| fun body ->
+        ForExp { var; escape = escape_init (); lb; hb; body }
       in
 
       let break_exp = ws *> string "break" >>| fun _ -> BreakExp in
@@ -133,10 +125,9 @@ let exp =
         let size_exp = ws *> char '[' *> exp <* ws <* char ']' in
         let init_exp = ws *> string "of" *> ws *> exp in
 
-        type_id >>= fun type_id ->
-        size_exp >>= fun size_exp ->
-        init_exp >>| fun init_exp ->
-        ArrayExp { typ = type_id; size = size_exp; init = init_exp }
+        type_id >>= fun type_ ->
+        size_exp >>= fun size ->
+        init_exp >>| fun init -> ArrayExp { type_; size; init }
       in
       let ty_option =
         let some = Angstrom.map (ws *> char ':' *> id) ~f:Option.some in
@@ -147,23 +138,17 @@ let exp =
       let vardec =
         let var_id = ws *> string "var" *> ws *> id in
         let var_exp = ws *> string ":=" *> ws *> exp in
-        var_id >>= fun var_id ->
-        ty_option >>= fun var_type ->
-        var_exp >>| fun var_exp ->
-        VarDec
-          {
-            name = var_id;
-            escape = escape_init ();
-            typ = var_type;
-            init = var_exp;
-          }
+        var_id >>= fun name ->
+        ty_option >>= fun type_ ->
+        var_exp >>| fun init ->
+        VarDec { name; escape = escape_init (); type_; init }
       in
 
       let tyfield =
         let field_id = ws *> id in
         let ty = ws *> char ':' *> ws *> id in
-        both field_id ty >>| fun (id, ty) ->
-        { name = id; escape = escape_init (); typ = ty }
+        both field_id ty >>| fun (fd_name, fd_type) ->
+        { fd_name; fd_escape = escape_init (); fd_type }
       in
 
       let fields =
@@ -185,18 +170,17 @@ let exp =
           in
           choice [ arrayOf; ty_name; tyfields ]
         in
-        both type_id ty >>| fun (id, ty) -> { tname = id; ty }
+        both type_id ty >>| fun (td_name, td_type) -> { td_name; td_type }
       in
 
       let fundec =
         let fun_id = ws *> string "function" *> ws *> id in
         let fields = ws *> char '(' *> ws *> fields <* ws <* char ')' in
         let body = ws *> char '=' *> exp in
-        fun_id >>= fun fun_id ->
-        fields >>= fun fields ->
-        ty_option >>= fun ty ->
-        body >>| fun body ->
-        { fname = fun_id; params = fields; result = ty; body }
+        fun_id >>= fun fname ->
+        fields >>= fun params ->
+        ty_option >>= fun fresult ->
+        body >>| fun body -> { fname; params; fresult; body }
       in
 
       let dec =
@@ -205,11 +189,10 @@ let exp =
         let vardec =
           let var_id = ws *> string "var" *> id in
           let var_exp = ws *> string ":=" *> exp in
-          var_id >>= fun var_id ->
-          ty_option >>= fun ty ->
-          var_exp >>| fun exp ->
-          VarDec
-            { name = var_id; escape = escape_init (); typ = ty; init = exp }
+          var_id >>= fun name ->
+          ty_option >>= fun type_ ->
+          var_exp >>| fun init ->
+          VarDec { name; escape = escape_init (); type_; init }
         in
         choice [ typedecs; funcdecs; vardec ]
       in
@@ -256,10 +239,10 @@ let exp =
           (* inner *> p >>| cons init *)
         in
         let create_or left right =
-          IfExp { test = left; then' = true'; else' = Some right }
+          IfExp { test = left; then_ = true_; else_ = Some right }
         in
         let create_and left right =
-          IfExp { test = left; then' = right; else' = Some false' }
+          IfExp { test = left; then_ = right; else_ = Some false_ }
         in
         let create_logic inner create p =
           p >>= fun init ->

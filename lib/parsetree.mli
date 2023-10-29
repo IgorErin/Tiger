@@ -1,5 +1,3 @@
-(* TODO () how to reference from tests ??? *)
-
 type var =
   | SimpleVar of Symbol.t
   | FieldVar of var * Symbol.t
@@ -15,18 +13,18 @@ and exp =
   | OpExp of { left : exp; oper : oper; right : exp }
   | SeqExp of exp list
   | AssignExp of { var : Symbol.t; exp : exp }
-  | IfExp of { test : exp; then' : exp; else' : exp option }
+  | IfExp of { test : exp; then_ : exp; else_ : exp option }
   | WhileExp of { test : exp; body : exp }
   | ForExp of {
       var : Symbol.t;
       escape : bool ref;
-      lo : exp;
-      hi : exp;
+      lb : exp;
+      hb : exp;
       body : exp;
     }
   | BreakExp
   | LetExp of { decs : dec list; body : exp }
-  | ArrayExp of { typ : Symbol.t; size : exp; init : exp }
+  | ArrayExp of { type_ : Symbol.t; size : exp; init : exp }
 
 and oper =
   | PlusOp
@@ -45,7 +43,7 @@ and dec =
   | VarDec of {
       name : Symbol.t;
       escape : bool ref;
-      typ : Symbol.t option;
+      type_ : Symbol.t option;
       init : exp;
     }
   | TypeDec of typedec list
@@ -53,10 +51,15 @@ and dec =
 and fundec = {
   fname : Symbol.t;
   params : field list;
-  result : Symbol.t option;
+  fresult : Symbol.t option;
   body : exp;
 }
 
-and typedec = { tname : Symbol.t; ty : ty }
-and ty = NameTy of Symbol.t | RecordTy of field list | ArrayTy of Symbol.t
-and field = { name : Symbol.t; escape : bool ref; typ : Symbol.t }
+and typedec = { td_name : Symbol.t; td_type : type_desc }
+
+and type_desc =
+  | NameTy of Symbol.t
+  | RecordTy of field list
+  | ArrayTy of Symbol.t
+
+and field = { fd_name : Symbol.t; fd_escape : bool ref; fd_type : Symbol.t }
