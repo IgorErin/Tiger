@@ -1,15 +1,16 @@
 open Base
 
-type unique = unit ref
+type unique = unit ref [@@deriving show]
 
-type ty =
+type t =
   | Int
   | String
-  | Record of (Symbol.t * ty) list * unique
-  | Array of ty * unique
+  | Record of (Symbol.t * t) list * unique
+  | Array of t * unique
   | Nil
   | Unit
-  | Name of Symbol.t * ty option ref
+  | Name of Symbol.t * t option ref
+[@@deriving show]
 
 let equal fst snd =
   match (fst, snd) with

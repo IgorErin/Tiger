@@ -1,6 +1,6 @@
 open Parsetree
 
-type expty = { exp : Translate.exp; ty : Types.ty }
+type expty = { exp : Translate.exp; ty : Types.t }
 
 open Env
 
@@ -51,11 +51,11 @@ let ( >> ) f g x = f x |> g
 
 let rec transExp (env : env) exp =
   let rec trexp = function
-    | VarExp v -> trvar env.types v (* TODO *)
-    | NilExp -> create_unit_exp Types.Nil
-    | IntExp _ -> create_unit_exp Types.Int
-    | StringExp _ -> create_unit_exp Types.String
-    | CallExp { func; args } -> (
+    | PVarExp v -> trvar env.types v (* TODO *)
+    | PNilExp -> create_unit_exp Types.Nil
+    | PIntExp _ -> create_unit_exp Types.Int
+    | PStringExp _ -> create_unit_exp Types.String
+    | PCallExp { func; args } -> (
         Symbol.look env.funs func |> function
         | Some func ->
             let argst = func.formals in
@@ -66,18 +66,18 @@ let rec transExp (env : env) exp =
             failwith
             @@ Printf.sprintf "Undefinded function: %s"
             @@ Symbol.name func)
-    | OpExp { left; oper = _; right } ->
+    | POpExp { left; oper = _; right } ->
         let _ = trexp left |> get_type |> Check.int in
         let _ = trexp right |> get_type |> Check.int in
         create_unit_exp Types.Int
-    | SeqExp ls -> (
+    | PSeqExp ls -> (
         List.rev ls |> function
         | [] -> create_unit_exp Types.Unit
         | [ hd ] -> trexp hd
         | hd :: tl ->
             let _ = List.iter (trexp >> get_type >> Check.unit) tl in
             trexp hd)
-    | AssignExp { var; exp } -> (
+    | PAssignExp { var; exp } -> (
         let rty = trexp exp |> get_type in
         let lty = Symbol.look env.vars var in
         match lty with
@@ -85,36 +85,37 @@ let rec transExp (env : env) exp =
             let _ = Check.equal lty rty in
             Types.Unit |> create_unit_exp
         | None -> failwith "Undefinded var")
-    | IfExp { test; then'; else' } -> (
+    | PIfExp { test; then_; else_ = Some else_ } ->
         let _ = trexp test |> get_type |> Check.int in
-        let t = trexp then' |> get_type in
-        match else' with
-        | Some else' ->
-            let e = trexp else' |> get_type in
-            Check.equal_tr t e |> create_unit_exp
-        | None -> Check.unit_tr t |> create_unit_exp)
-    | WhileExp { test; body } ->
+        let t = trexp then_ |> get_type in
+        let e = trexp else_ |> get_type in
+        Check.equal_tr t e |> create_unit_exp
+    | PIfExp { test; then_; else_ = None } ->
+        let _ = trexp test |> get_type |> Check.int in
+        let t = trexp then_ |> get_type in
+        Check.unit_tr t |> create_unit_exp
+    | PWhileExp { test; body } ->
         let _ = trexp test |> get_type |> Check.int in
         let _ = trexp body |> get_type |> Check.unit in
         create_unit_exp Types.Unit
-    | ForExp { var; escape = _; lo; hi; body } ->
+    | PForExp { var; escape = _; lb; hb; body } ->
         let vart =
-          let lot = trexp lo |> get_type |> Check.int in
-          let hit = trexp hi |> get_type |> Check.int in
+          let lot = trexp lb |> get_type |> Check.int in
+          let hit = trexp hb |> get_type |> Check.int in
           ()
         in
         (* always int *)
         let vars = Symbol.enter env.vars var Types.Int in
         let bodyt = transExp { env with vars } body |> get_type in
         Check.unit_tr bodyt |> create_unit_exp
-    | BreakExp -> Types.Unit |> create_unit_exp
-    | LetExp { decs; body } ->
+    | PBreakExp -> Types.Unit |> create_unit_exp
+    | PLetExp { decs; body } ->
         let env = List.fold_left transDec env decs in
         transExp env body
-    | ArrayExp { typ; size; init } -> (
+    | PArrayExp { type_; size; init } -> (
         let _ = trexp size |> get_type |> Check.int in
         let it = trexp init |> get_type in
-        let at = Symbol.look env.types typ in
+        let at = Symbol.look env.types type_ in
         match at with
         | Some (Types.Array (ty, _) as at) ->
             let _ = Check.equal it ty in
@@ -160,27 +161,27 @@ let rec transExp (env : env) exp =
   trexp exp
 
 and transDec env = function
-  | VarDec { name; escape = _; typ = Some typ; init } ->
+  | PVarDec { name; escape = _; type_ = Some type_; init } ->
       let it = transExp env init |> get_type in
       let vt =
-        Symbol.look env.types typ
+        Symbol.look env.types type_
         |> (function Some typ -> typ | None -> failwith "Unknown var type")
         |> Check.nil_record_constr it
       in
       let vars = Symbol.enter env.vars name vt in
       { env with vars }
-  | VarDec { name; escape = _; typ = None; init } ->
+  | PVarDec { name; escape = _; type_ = None; init } ->
       let it = transExp env init |> get_type in
       let vars = Symbol.enter env.vars name it in
       { env with vars }
-  | TypeDec [ { tname; ty } ] ->
-      let ty = transTy env ty in
-      let types = Symbol.enter env.types tname ty in
+  | PTypeDec [ { ptd_name; ptd_type } ] ->
+      let ty = transTy env ptd_type in
+      let types = Symbol.enter env.types ptd_name ty in
       { env with types }
-  | TypeDec ls ->
+  | PTypeDec ls ->
       let open Types in
       let add env name t = Symbol.enter env name t in
-      let names = List.map (fun { tname; ty = _ } -> tname) ls in
+      let names = List.map (fun { ptd_name; _ } -> ptd_name) ls in
       let types =
         List.fold_left
           (fun env tname ->
@@ -188,9 +189,9 @@ and transDec env = function
             add env tname ty)
           env.types names
       in
-      let set_type { tname; ty } =
-        let ty = transTy { env with types } ty in
-        (Symbol.look types tname |> function
+      let set_type { ptd_name; ptd_type } =
+        let ty = transTy { env with types } ptd_type in
+        (Symbol.look types ptd_name |> function
          | Some v -> v
          | None -> failwith "Undec type")
         |> function
@@ -199,7 +200,7 @@ and transDec env = function
       in
       let _ = ls |> List.iter set_type in
       { env with types }
-  | FunctionDec ls ->
+  | PFunctionDec ls ->
       let open Types in
       (* helpers*)
       let ty_of_opt = function
@@ -208,36 +209,36 @@ and transDec env = function
       in
       let ty_of_symbol s = Symbol.look env.types s |> ty_of_opt in
       let map_result = function Some t -> ty_of_symbol t | None -> Unit in
-      let map_param x = ty_of_symbol x.Parsetree.typ in
+      let map_param x = ty_of_symbol x.Parsetree.pfd_type in
       (* create env.funs be heads *)
       let funs =
         List.fold_left
-          (fun funs { fname; params; result; _ } ->
-            let formals = List.map map_param params in
-            let result = map_result result in
-            Symbol.enter funs fname Env.{ formals; result })
+          (fun funs { pfun_name; pfun_params; pfun_result; _ } ->
+            let formals = List.map map_param pfun_params in
+            let result = map_result pfun_result in
+            Symbol.enter funs pfun_name Env.{ formals; result })
           env.funs ls
       in
       (* map params to new env.vars *)
       let mod_vars params =
         List.fold_left
-          (fun vars { name; typ; _ } ->
-            let ty = ty_of_symbol typ in
-            Symbol.enter vars name ty)
+          (fun vars { pfd_name; pfd_type; _ } ->
+            let ty = ty_of_symbol pfd_type in
+            Symbol.enter vars pfd_name ty)
           env.vars params
       in
       (* travers body, check return type *)
       let _ =
         List.iter
-          (fun { body; result; params; _ } ->
+          (fun { pfun_body; pfun_result; pfun_params; _ } ->
             (* for each funs
                1) add params and funs to env.vars
                2) check body
                3) compare body and result type *)
-            let vars = mod_vars params in
+            let vars = mod_vars pfun_params in
             let env = { env with funs; vars } in
-            let bt = transExp env body |> get_type in
-            let rt = map_result result in
+            let bt = transExp env pfun_body |> get_type in
+            let rt = map_result pfun_result in
             Check.equal bt rt)
           ls
       in
@@ -250,7 +251,9 @@ and transTy env t =
     | NameTy n -> Symbol.look env.types n |> ty_of_opt
     | RecordTy fl ->
         let fl =
-          List.map (fun { name; typ; _ } -> (name, get_type env typ)) fl
+          List.map
+            (fun { pfd_name; pfd_type; _ } -> (pfd_name, get_type env pfd_type))
+            fl
         in
         let unique = Check.get_unique () in
         Types.Record (fl, unique)
@@ -262,5 +265,5 @@ and transTy env t =
   run t
 
 let type_check exp =
-  let (_ : Types.ty) = transExp Env.base_env exp |> get_type in
+  let (_ : Types.t) = transExp Env.base_env exp |> get_type in
   ()

@@ -1,7 +1,7 @@
-type fentry = { formals : Types.ty list; result : Types.ty }
-type venv = Types.ty Symbol.table
+type fentry = { formals : Types.t list; result : Types.t }
+type venv = Types.t Symbol.table
 type fenv = fentry Symbol.table
-type tenv = Types.ty Symbol.table
+type tenv = Types.t Symbol.table
 type env = { vars : venv; funs : fenv; types : tenv }
 
 let enter_tr s i tbl = Symbol.enter tbl s i

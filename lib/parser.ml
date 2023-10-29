@@ -22,8 +22,8 @@ let parse p str =
   | Error m -> failwith m
 
 let escape_init () = ref true
-let true_ = IntExp 1
-let false_ = IntExp 0
+let true_ = PIntExp 1
+let false_ = PIntExp 0
 
 let exp =
   fix (fun exp ->
@@ -48,21 +48,21 @@ let exp =
         simpleVar >>= var'
       in
 
-      let var_exp = var >>| fun v -> VarExp v in
+      let var_exp = var >>| fun v -> PVarExp v in
 
-      let nil_exp = ws *> string "nil" *> return NilExp in
+      let nil_exp = ws *> string "nil" *> return PNilExp in
 
       let number_exp =
         let unsign_number = take_while1 Char.is_digit >>| Int.of_string in
         let sign_number = char '-' *> ws *> unsign_number >>| Int.neg in
-        ws *> (sign_number <|> unsign_number) >>| fun x -> IntExp x
+        ws *> (sign_number <|> unsign_number) >>| fun x -> PIntExp x
       in
 
       let string_exp =
         let leftq = ws *> char '"' in
         let text = take_while (function '"' -> false | _ -> true) in
         let rightq = char '"' in
-        leftq *> text <* rightq >>| fun result -> StringExp result
+        leftq *> text <* rightq >>| fun result -> PStringExp result
       in
 
       let seq s =
@@ -72,18 +72,18 @@ let exp =
         let cbr = ws *> char ')' in
         obr *> exps <* cbr
       in
-      let seq_exp = seq ';' >>| fun result -> SeqExp result in
+      let seq_exp = seq ';' >>| fun result -> PSeqExp result in
       let fcall_exp =
         let id = ws *> id in
         let seq = seq in
-        both id (seq ',') >>| fun (i, s) -> CallExp { func = i; args = s }
+        both id (seq ',') >>| fun (i, s) -> PCallExp { func = i; args = s }
       in
 
       let assign_exp =
         let id = ws *> id in
         let exp = ws *> string ":=" *> exp in
         id >>= fun id ->
-        exp >>| fun exp -> AssignExp { var = id; exp }
+        exp >>| fun exp -> PAssignExp { var = id; exp }
       in
 
       let if_exp =
@@ -92,7 +92,7 @@ let exp =
         let if_then_exp_cont else_ =
           if_ >>= fun test ->
           then_ >>= fun then_ ->
-          else_ >>| fun else_ -> IfExp { test; then_; else_ }
+          else_ >>| fun else_ -> PIfExp { test; then_; else_ }
         in
         let _else = ws *> string "else" *> ws *> exp >>| Option.some in
         let option_else = _else <|> return None in
@@ -103,7 +103,7 @@ let exp =
         let cond_exp = ws *> string "while" *> ws *> exp in
         let do_exp = ws *> string "do" *> exp in
         cond_exp >>= fun test ->
-        do_exp >>| fun do_exp -> WhileExp { test; body = do_exp }
+        do_exp >>| fun do_exp -> PWhileExp { test; body = do_exp }
       in
 
       let for_exp =
@@ -115,10 +115,10 @@ let exp =
         lb_exp >>= fun lb ->
         ub_exp >>= fun hb ->
         do_exp >>| fun body ->
-        ForExp { var; escape = escape_init (); lb; hb; body }
+        PForExp { var; escape = escape_init (); lb; hb; body }
       in
 
-      let break_exp = ws *> string "break" >>| fun _ -> BreakExp in
+      let break_exp = ws *> string "break" >>| fun _ -> PBreakExp in
 
       let array_exp =
         let type_id = ws *> id in
@@ -127,7 +127,7 @@ let exp =
 
         type_id >>= fun type_ ->
         size_exp >>= fun size ->
-        init_exp >>| fun init -> ArrayExp { type_; size; init }
+        init_exp >>| fun init -> PArrayExp { type_; size; init }
       in
       let ty_option =
         let some = Angstrom.map (ws *> char ':' *> id) ~f:Option.some in
@@ -141,14 +141,14 @@ let exp =
         var_id >>= fun name ->
         ty_option >>= fun type_ ->
         var_exp >>| fun init ->
-        VarDec { name; escape = escape_init (); type_; init }
+        PVarDec { name; escape = escape_init (); type_; init }
       in
 
       let tyfield =
         let field_id = ws *> id in
         let ty = ws *> char ':' *> ws *> id in
-        both field_id ty >>| fun (fd_name, fd_type) ->
-        { fd_name; fd_escape = escape_init (); fd_type }
+        both field_id ty >>| fun (pfd_name, pfd_type) ->
+        { pfd_name; pfd_escape = escape_init (); pfd_type }
       in
 
       let fields =
@@ -170,29 +170,30 @@ let exp =
           in
           choice [ arrayOf; ty_name; tyfields ]
         in
-        both type_id ty >>| fun (td_name, td_type) -> { td_name; td_type }
+        both type_id ty >>| fun (ptd_name, ptd_type) -> { ptd_name; ptd_type }
       in
 
       let fundec =
         let fun_id = ws *> string "function" *> ws *> id in
         let fields = ws *> char '(' *> ws *> fields <* ws <* char ')' in
         let body = ws *> char '=' *> exp in
-        fun_id >>= fun fname ->
-        fields >>= fun params ->
-        ty_option >>= fun fresult ->
-        body >>| fun body -> { fname; params; fresult; body }
+        fun_id >>= fun pfun_name ->
+        fields >>= fun pfun_params ->
+        ty_option >>= fun pfun_result ->
+        body >>| fun pfun_body ->
+        { pfun_name; pfun_params; pfun_result; pfun_body }
       in
 
       let dec =
-        let typedecs = sep_by1 ws typedec >>| fun x -> TypeDec x in
-        let funcdecs = sep_by1 ws fundec >>| fun x -> FunctionDec x in
+        let typedecs = sep_by1 ws typedec >>| fun x -> PTypeDec x in
+        let funcdecs = sep_by1 ws fundec >>| fun x -> PFunctionDec x in
         let vardec =
           let var_id = ws *> string "var" *> id in
           let var_exp = ws *> string ":=" *> exp in
           var_id >>= fun name ->
           ty_option >>= fun type_ ->
           var_exp >>| fun init ->
-          VarDec { name; escape = escape_init (); type_; init }
+          PVarDec { name; escape = escape_init (); type_; init }
         in
         choice [ typedecs; funcdecs; vardec ]
       in
@@ -203,11 +204,11 @@ let exp =
         let _end = ws *> string "end" in
         let_dec_list >>= fun dec_list ->
         in_exp >>= fun in_exp ->
-        _end >>| fun _ -> LetExp { decs = dec_list; body = in_exp }
+        _end >>| fun _ -> PLetExp { decs = dec_list; body = in_exp }
       in
       let unar_minus =
         ws *> char '-' *> exp >>| fun x ->
-        OpExp { left = IntExp 0; oper = MinusOp; right = x }
+        POpExp { left = PIntExp 0; oper = MinusOp; right = x }
       in
 
       let non_op =
@@ -232,17 +233,17 @@ let exp =
       let bin_op_exp =
         (* create left associative bin op parser *)
         let create inner oper p =
-          let cons left right = OpExp { left; oper; right } in
+          let cons left right = POpExp { left; oper; right } in
           p >>= fun init ->
           let fold ls = List.fold ls ~init ~f:cons in
           fold <$> many (inner *> p)
           (* inner *> p >>| cons init *)
         in
         let create_or left right =
-          IfExp { test = left; then_ = true_; else_ = Some right }
+          PIfExp { test = left; then_ = true_; else_ = Some right }
         in
         let create_and left right =
-          IfExp { test = left; then_ = right; else_ = Some false_ }
+          PIfExp { test = left; then_ = right; else_ = Some false_ }
         in
         let create_logic inner create p =
           p >>= fun init ->

@@ -5,26 +5,26 @@ type var =
 [@@deriving show]
 
 and exp =
-  | VarExp of var
-  | NilExp
-  | IntExp of int
-  | StringExp of string
-  | CallExp of { func : Symbol.t; args : exp list }
-  | OpExp of { left : exp; oper : oper; right : exp }
-  | SeqExp of exp list
-  | AssignExp of { var : Symbol.t; exp : exp }
-  | IfExp of { test : exp; then_ : exp; else_ : exp option }
-  | WhileExp of { test : exp; body : exp }
-  | ForExp of {
+  | PVarExp of var
+  | PNilExp
+  | PIntExp of int
+  | PStringExp of string
+  | PCallExp of { func : Symbol.t; args : exp list }
+  | POpExp of { left : exp; oper : oper; right : exp }
+  | PSeqExp of exp list
+  | PAssignExp of { var : Symbol.t; exp : exp }
+  | PIfExp of { test : exp; then_ : exp; else_ : exp option }
+  | PWhileExp of { test : exp; body : exp }
+  | PForExp of {
       var : Symbol.t;
       escape : bool ref;
       lb : exp;
       hb : exp;
       body : exp;
     }
-  | BreakExp
-  | LetExp of { decs : dec list; body : exp }
-  | ArrayExp of { type_ : Symbol.t; size : exp; init : exp }
+  | PBreakExp
+  | PLetExp of { decs : dec list; body : exp }
+  | PArrayExp of { type_ : Symbol.t; size : exp; init : exp }
 
 and oper =
   | PlusOp
@@ -39,27 +39,27 @@ and oper =
   | GeOp
 
 and dec =
-  | FunctionDec of fundec list
-  | VarDec of {
+  | PFunctionDec of fundec list
+  | PVarDec of {
       name : Symbol.t;
       escape : bool ref;
       type_ : Symbol.t option;
       init : exp;
     }
-  | TypeDec of typedec list
+  | PTypeDec of typedec list
 
 and fundec = {
-  fname : Symbol.t;
-  params : field list;
-  fresult : Symbol.t option;
-  body : exp;
+  pfun_name : Symbol.t;
+  pfun_params : field list;
+  pfun_result : Symbol.t option;
+  pfun_body : exp;
 }
 
-and typedec = { td_name : Symbol.t; td_type : type_desc }
+and typedec = { ptd_name : Symbol.t; ptd_type : type_desc }
 
 and type_desc =
   | NameTy of Symbol.t
   | RecordTy of field list
   | ArrayTy of Symbol.t
 
-and field = { fd_name : Symbol.t; fd_escape : bool ref; fd_type : Symbol.t }
+and field = { pfd_name : Symbol.t; pfd_escape : bool ref; pfd_type : Symbol.t }
