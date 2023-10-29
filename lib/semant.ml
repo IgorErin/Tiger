@@ -99,11 +99,12 @@ let rec transExp (env : env) exp =
         create_unit_exp Types.Unit
     | ForExp { var; escape = _; lo; hi; body } ->
         let vart =
-          let lot = trexp lo |> get_type in
-          let hit = trexp hi |> get_type in
-          Check.equal_tr lot hit
+          let lot = trexp lo |> get_type |> Check.int in
+          let hit = trexp hi |> get_type |> Check.int in
+          ()
         in
-        let vars = Symbol.enter env.vars var vart in
+        (* always int *)
+        let vars = Symbol.enter env.vars var Types.Int in
         let bodyt = transExp { env with vars } body |> get_type in
         Check.unit_tr bodyt |> create_unit_exp
     | BreakExp -> Types.Unit |> create_unit_exp
