@@ -1,11 +1,16 @@
-let anon_fun = Config.set_path
-let message = "Path, parameters, etc. TODO()"
+let () =
+  let anon_fun = Config.set_path in
+  let message = "Path, parameters, etc. TODO()" in
 
-let options =
-  let open Config in
-  [ ("-dparsetree", Arg.Unit dump_parse_tree, "Set file format") ]
+  let options =
+    let open Config in
+    [
+      ("-dparsetree", Arg.Unit set_dparsetree, "Dump parse tree");
+      ("-dtypedtree", Arg.Unit set_dtypedtree, "Dumpe typed tree");
+    ]
+  in
 
-let () = Arg.parse options anon_fun message
+  Arg.parse options anon_fun message
 
 let read_file path =
   let ch = Stdio.In_channel.create path in
@@ -14,8 +19,8 @@ let read_file path =
     ~finally:(fun () -> In_channel.close ch)
 
 let () =
-  let path = Config.get_path () in
-  let code = read_file path in
+  let name = Config.get_path () in
+  let code = read_file name in
   let parse_tree =
     let open Tiger in
     let open Base in
@@ -25,4 +30,8 @@ let () =
   in
   if Config.default.dparsetree then
     Printf.printf "%s" @@ Tiger.Parsetree.show_exp parse_tree;
-  Tiger.Semant.type_check parse_tree
+
+  let typedtree = Tiger.Semant.trans parse_tree in
+  if Config.is_dtypedtree () then
+    Tiger.Typedtree.pp_exp Format.str_formatter typedtree;
+  ()

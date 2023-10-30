@@ -1,7 +1,7 @@
 type var =
-  | SimpleVar of Symbol.t
-  | FieldVar of var * Symbol.t
-  | SubscriptVar of var * exp
+  | PSimpleVar of Symbol.t
+  | PFieldVar of var * Symbol.t
+  | PSubscriptVar of var * exp
 [@@deriving show]
 
 and exp =

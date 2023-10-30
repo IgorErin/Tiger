@@ -1,5 +1,13 @@
-type exp_desc =
-  | TVarExp of Parsetree.var
+type var_desc =
+  | TSimpleVar of Symbol.t
+  | TFieldVar of var * Symbol.t
+  | TSubscriptVar of var * exp
+[@@deriving show]
+
+and var = { var_desc : var_desc; var_type : Types.t }
+
+and exp_desc =
+  | TVarExp of var
   | TNilExp
   | TIntExp of int
   | TStringExp of string
@@ -28,7 +36,7 @@ and dec =
   | TVarDec of {
       name : Symbol.t;
       escape : bool ref;
-      type_ : Symbol.t option;
+      type_ : Types.t;
       init : exp;
     }
   | TTypeDec of typedec list

@@ -28,18 +28,18 @@ let false_ = PIntExp 0
 let exp =
   fix (fun exp ->
       let var =
-        let simpleVar = id >>| fun x -> SimpleVar x in
+        let simpleVar = id >>| fun x -> PSimpleVar x in
         (* . id -> id *)
         let pointId = point *> id in
         (* [exp] -> exp *)
         let subscriptExp = ws *> char '[' *> exp <* ws *> char ']' in
         (* var . id -> fieldVar *)
         let pointId_cont var =
-          pointId >>| fun right_id -> FieldVar (var, right_id)
+          pointId >>| fun right_id -> PFieldVar (var, right_id)
         in
         (* var [exp] -> subscriptVar *)
         let subscript_cont var =
-          subscriptExp >>| fun expr -> SubscriptVar (var, expr)
+          subscriptExp >>| fun expr -> PSubscriptVar (var, expr)
         in
         (* var (. id | [exp])* *)
         let rec var' var =
