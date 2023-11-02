@@ -1,6 +1,5 @@
 open Angstrom
 open Parsetree
-open! Base
 
 type t = string
 
@@ -9,10 +8,17 @@ let of_string x = x
 let ws =
   skip_while (function '\x20' | '\x0a' | '\x0d' | '\x09' -> true | _ -> false)
 
-let point = ws *> char '.'
+let take_until signal = fix (fun self -> signal <|> take 1 *> self)
+
+let comment =
+  fix (fun self ->
+      let start = string "/*" in
+      let finish = string "*/" in
+      start *> take_until (finish <|> self *> take_until finish))
+
+let ws = ws *> fix (fun self -> comment *> ws *> self <|> ws)
 
 let id =
-  (* let hd = take_while1 (function 'a' .. 'z' | 'A' .. 'Z' | '_' -> true | _ -> false) in  *)
   let tl =
     take_while1
     @@ String.contains
@@ -20,7 +26,7 @@ let id =
   in
   ws *> tl >>= fun id ->
   let hd = String.get id 0 in
-  if not @@ Char.is_digit hd then return @@ Symbol.symbol id else fail id
+  if not @@ Base.Char.is_digit hd then return @@ Symbol.symbol id else fail id
 
 let parse p str =
   parse_string ~consume:All p str |> function
@@ -36,7 +42,7 @@ let exp =
       let var =
         let simpleVar = id >>| fun x -> PSimpleVar x in
         (* . id -> id *)
-        let pointId = point *> id in
+        let pointId = ws *> char '.' *> ws *> id in
         (* [exp] -> exp *)
         let subscriptExp = ws *> char '[' *> exp <* ws *> char ']' in
         (* var . id -> fieldVar *)
@@ -56,23 +62,24 @@ let exp =
 
       let var_exp = var >>| fun v -> PVarExp v in
 
-      let nil_exp = ws *> string "nil" *> return PNilExp in
+      let nil_exp = string "nil" *> return PNilExp in
 
       let number_exp =
+        let open Base in
         let unsign_number = take_while1 Char.is_digit >>| Int.of_string in
         let sign_number = char '-' *> ws *> unsign_number >>| Int.neg in
-        ws *> (sign_number <|> unsign_number) >>| fun x -> PIntExp x
+        sign_number <|> unsign_number >>| fun x -> PIntExp x
       in
 
       let string_exp =
-        let leftq = ws *> char '"' in
+        let leftq = char '"' in
         let text = take_while (function '"' -> false | _ -> true) in
         let rightq = char '"' in
         leftq *> text <* rightq >>| fun result -> PStringExp result
       in
 
       let seq s =
-        let obr = ws *> char '(' in
+        let obr = char '(' in
         let s = ws *> char s <* ws in
         let exps = sep_by s exp in
         let cbr = ws *> char ')' in
@@ -80,20 +87,20 @@ let exp =
       in
       let seq_exp = seq ';' >>| fun result -> PSeqExp result in
       let fcall_exp =
-        let id = ws *> id in
+        let id = id <* ws in
         let seq = seq in
         both id (seq ',') >>| fun (i, s) -> PCallExp { func = i; args = s }
       in
 
       let assign_exp =
-        let var = ws *> var in
+        let var = var in
         let exp = ws *> string ":=" *> exp in
         var >>= fun var ->
         exp >>| fun exp -> PAssignExp { var; exp }
       in
 
       let if_exp =
-        let if_ = ws *> string "if" *> ws *> exp in
+        let if_ = string "if" *> ws *> exp in
         let then_ = ws *> string "then" *> ws *> exp in
         let if_then_exp_cont else_ =
           if_ >>= fun test ->
@@ -106,14 +113,14 @@ let exp =
       in
 
       let while_exp =
-        let cond_exp = ws *> string "while" *> ws *> exp in
+        let cond_exp = string "while" *> ws *> exp in
         let do_exp = ws *> string "do" *> exp in
         cond_exp >>= fun test ->
         do_exp >>| fun do_exp -> PWhileExp { test; body = do_exp }
       in
 
       let for_exp =
-        let for_id = ws *> string "for" *> ws *> id in
+        let for_id = string "for" *> ws *> id in
         let lb_exp = ws *> string ":=" *> ws *> exp in
         let ub_exp = ws *> string "to" *> ws *> exp in
         let do_exp = ws *> string "do" *> ws *> exp in
@@ -124,10 +131,10 @@ let exp =
         PForExp { var; escape = escape_init (); lb; hb; body }
       in
 
-      let break_exp = ws *> string "break" >>| fun _ -> PBreakExp in
+      let break_exp = string "break" >>| fun _ -> PBreakExp in
 
       let array_exp =
-        let type_id = ws *> id in
+        let type_id = id in
         let size_exp = ws *> char '[' *> exp <* ws <* char ']' in
         let init_exp = ws *> string "of" *> ws *> exp in
 
@@ -142,7 +149,7 @@ let exp =
       in
 
       let record_exp =
-        let type_ = ws *> id in
+        let type_ = id in
         let field_assign =
           let id = ws *> id in
           let exp = ws *> string "=" *> ws *> exp in
@@ -157,46 +164,37 @@ let exp =
         type_ >>= fun type_ ->
         fields >>| fun fields -> PRecordExp { type_; fields }
       in
-      let vardec =
-        let var_id = ws *> string "var" *> ws *> id in
-        let var_exp = ws *> string ":=" *> ws *> exp in
-        var_id >>= fun name ->
-        ty_option >>= fun type_ ->
-        var_exp >>| fun init ->
-        PVarDec { name; escape = escape_init (); type_; init }
-      in
-
-      let tyfield =
-        let field_id = ws *> id in
-        let ty = ws *> char ':' *> ws *> id in
-        both field_id ty >>| fun (pfd_name, pfd_type) ->
-        { pfd_name; pfd_escape = escape_init (); pfd_type }
-      in
 
       let fields =
+        let tyfield =
+          let field_id = ws *> id in
+          let ty = ws *> char ':' *> ws *> id in
+          both field_id ty >>| fun (pfd_name, pfd_type) ->
+          { pfd_name; pfd_escape = escape_init (); pfd_type }
+        in
         let comma = ws *> char ',' <* ws in
         ws *> sep_by comma tyfield
       in
 
       let typedec =
-        let type_id = ws *> string "type" *> id <* ws <* char '=' <* ws in
+        let type_id = string "type" *> id <* ws <* char '=' <* ws in
         let ty =
           let arrayOf =
-            let p = ws *> string "array" *> ws *> string "of" *> ws *> id in
+            let p = string "array" *> ws *> string "of" *> ws *> id in
             p >>| fun result -> ArrayTy result
           in
           let ty_name = id >>| fun i -> NameTy i in
           let tyfields =
-            ws *> char '{' *> fields <* ws <* char '}' >>| fun result ->
+            char '{' *> fields <* ws <* char '}' >>| fun result ->
             RecordTy result
           in
-          choice [ arrayOf; ty_name; tyfields ]
+          ws *> choice [ arrayOf; ty_name; tyfields ]
         in
         both type_id ty >>| fun (ptd_name, ptd_type) -> { ptd_name; ptd_type }
       in
 
       let fundec =
-        let fun_id = ws *> string "function" *> ws *> id in
+        let fun_id = string "function" *> ws *> id in
         let fields = ws *> char '(' *> ws *> fields <* ws <* char ')' in
         let body = ws *> char '=' *> exp in
         fun_id >>= fun pfun_name ->
@@ -210,18 +208,18 @@ let exp =
         let typedecs = sep_by1 ws typedec >>| fun x -> PTypeDec x in
         let funcdecs = sep_by1 ws fundec >>| fun x -> PFunctionDec x in
         let vardec =
-          let var_id = ws *> string "var" *> id in
+          let var_id = string "var" *> id in
           let var_exp = ws *> string ":=" *> exp in
           var_id >>= fun name ->
           ty_option >>= fun type_ ->
           var_exp >>| fun init ->
           PVarDec { name; escape = escape_init (); type_; init }
         in
-        choice [ typedecs; funcdecs; vardec ]
+        ws *> choice [ typedecs; funcdecs; vardec ]
       in
 
       let let_exp =
-        let let_dec_list = ws *> string "let" *> ws *> sep_by1 ws dec in
+        let let_dec_list = string "let" *> ws *> sep_by1 ws dec in
         let in_exp = ws *> string "in" *> exp in
         let _end = ws *> string "end" in
         let_dec_list >>= fun dec_list ->
@@ -229,31 +227,33 @@ let exp =
         _end >>| fun _ -> PLetExp { decs = dec_list; body = in_exp }
       in
       let unar_minus =
-        ws *> char '-' *> exp >>| fun x ->
+        char '-' *> exp >>| fun x ->
         POpExp { left = PIntExp 0; oper = MinusOp; right = x }
       in
 
       let non_op =
-        choice
-          [
-            let_exp;
-            record_exp;
-            array_exp;
-            break_exp;
-            for_exp;
-            while_exp;
-            if_exp;
-            fcall_exp;
-            seq_exp;
-            assign_exp;
-            string_exp;
-            number_exp;
-            nil_exp;
-            var_exp;
-            unar_minus;
-          ]
+        ws
+        *> choice
+             [
+               let_exp;
+               record_exp;
+               array_exp;
+               break_exp;
+               for_exp;
+               while_exp;
+               if_exp;
+               fcall_exp;
+               seq_exp;
+               assign_exp;
+               string_exp;
+               number_exp;
+               nil_exp;
+               var_exp;
+               unar_minus;
+             ]
       in
       let bin_op_exp =
+        let open Base in
         (* create left associative bin op parser *)
         let create inner oper p =
           let cons left right = POpExp { left; oper; right } in
@@ -288,9 +288,28 @@ let exp =
         |> create_logic (create_inner "|") create_or
       in
 
-      bin_op_exp)
+      ws
+      *> choice
+           [
+             let_exp;
+             record_exp;
+             array_exp;
+             break_exp;
+             for_exp;
+             while_exp;
+             bin_op_exp;
+             if_exp;
+             fcall_exp;
+             seq_exp;
+             assign_exp;
+             string_exp;
+             number_exp;
+             nil_exp;
+             var_exp;
+             unar_minus;
+           ])
 
 let parse str =
   parse_string ~consume:All (exp <* ws) str |> function
-  | Ok x -> Either.first x
-  | Error m -> Either.second m
+  | Ok x -> Base.Either.first x
+  | Error m -> Base.Either.second m
