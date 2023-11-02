@@ -12,7 +12,7 @@ and exp =
   | PCallExp of { func : Symbol.t; args : exp list }
   | POpExp of { left : exp; oper : oper; right : exp }
   | PSeqExp of exp list
-  | PAssignExp of { var : Symbol.t; exp : exp }
+  | PAssignExp of { var : var; exp : exp }
   | PIfExp of { test : exp; then_ : exp; else_ : exp option }
   | PWhileExp of { test : exp; body : exp }
   | PForExp of {
@@ -25,6 +25,7 @@ and exp =
   | PBreakExp
   | PLetExp of { decs : dec list; body : exp }
   | PArrayExp of { type_ : Symbol.t; size : exp; init : exp }
+  | PRecordExp of { type_ : Symbol.t; fields : (Symbol.t * exp) list }
 
 and oper =
   | PlusOp

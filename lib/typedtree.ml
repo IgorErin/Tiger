@@ -14,7 +14,7 @@ and exp_desc =
   | TCallExp of { func : Symbol.t; args : exp list }
   | TOpExp of { left : exp; oper : Parsetree.oper; right : exp }
   | TSeqExp of exp list
-  | TAssignExp of { var : Symbol.t; exp : exp }
+  | TAssignExp of { var : var; exp : exp }
   | TIfExp of { test : exp; then_ : exp; else_ : exp option }
   | TWhileExp of { test : exp; body : exp }
   | TForExp of {
@@ -26,7 +26,8 @@ and exp_desc =
     }
   | TBreakExp
   | TLetExp of { decs : dec list; body : exp }
-  | TArrayExp of { type_ : Symbol.t; size : exp; init : exp }
+  | TArrayExp of { type_ : Types.t; size : exp; init : exp }
+  | TRecordExp of { type_ : Types.t; fields : (Symbol.t * exp) list }
 [@@deriving show]
 
 and exp = { exp_desc : exp_desc; exp_type : Types.t }

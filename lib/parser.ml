@@ -12,9 +12,15 @@ let ws =
 let point = ws *> char '.'
 
 let id =
-  ws
-  *> take_while1 (function 'a' .. 'z' | 'A' .. 'Z' | '_' -> true | _ -> false)
-  >>| Symbol.symbol
+  (* let hd = take_while1 (function 'a' .. 'z' | 'A' .. 'Z' | '_' -> true | _ -> false) in  *)
+  let tl =
+    take_while1
+    @@ String.contains
+         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'_"
+  in
+  ws *> tl >>= fun id ->
+  let hd = String.get id 0 in
+  if not @@ Char.is_digit hd then return @@ Symbol.symbol id else fail id
 
 let parse p str =
   parse_string ~consume:All p str |> function
@@ -80,10 +86,10 @@ let exp =
       in
 
       let assign_exp =
-        let id = ws *> id in
+        let var = ws *> var in
         let exp = ws *> string ":=" *> exp in
-        id >>= fun id ->
-        exp >>| fun exp -> PAssignExp { var = id; exp }
+        var >>= fun var ->
+        exp >>| fun exp -> PAssignExp { var; exp }
       in
 
       let if_exp =
@@ -135,6 +141,22 @@ let exp =
         some <|> none
       in
 
+      let record_exp =
+        let type_ = ws *> id in
+        let field_assign =
+          let id = ws *> id in
+          let exp = ws *> string "=" *> ws *> exp in
+          both id exp
+        in
+        let fields =
+          let left = ws *> char '{' in
+          let comma = ws *> char ',' <* ws in
+          let right = ws *> char '}' in
+          left *> sep_by comma field_assign <* right
+        in
+        type_ >>= fun type_ ->
+        fields >>| fun fields -> PRecordExp { type_; fields }
+      in
       let vardec =
         let var_id = ws *> string "var" *> ws *> id in
         let var_exp = ws *> string ":=" *> ws *> exp in
@@ -215,6 +237,7 @@ let exp =
         choice
           [
             let_exp;
+            record_exp;
             array_exp;
             break_exp;
             for_exp;
@@ -265,24 +288,7 @@ let exp =
         |> create_logic (create_inner "|") create_or
       in
 
-      choice
-        [
-          let_exp;
-          array_exp;
-          break_exp;
-          for_exp;
-          while_exp;
-          if_exp;
-          fcall_exp;
-          seq_exp;
-          assign_exp;
-          string_exp;
-          bin_op_exp;
-          number_exp;
-          nil_exp;
-          var_exp;
-          unar_minus;
-        ])
+      bin_op_exp)
 
 let parse str =
   parse_string ~consume:All (exp <* ws) str |> function

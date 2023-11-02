@@ -37,6 +37,9 @@ module Check = struct
       | _ -> failwith "Nil and record. Not equal types."
 
   let get_unique () = ref ()
+
+  let sy_equal fst snd =
+    if Symbol.equal fst snd then () else failwith "Symbol must be equal."
 end
 
 let create_unit_exp ty = { exp = (); ty }
@@ -86,16 +89,13 @@ let rec transExp (env : env) exp =
             let hd = trexp hd in
             let texp = TSeqExp (hd :: tl) in
             mk_typed_exp (get_type hd) texp)
-    | PAssignExp { var; exp } -> (
+    | PAssignExp { var; exp } ->
         let exp = trexp exp in
         let expty = exp |> get_type in
-        let lty = Symbol.look env.vars var in
-        match lty with
-        | Some lty ->
-            let () = Check.equal lty expty in
-            let texp = TAssignExp { var; exp } in
-            mk_typed_exp Types.Unit texp
-        | None -> failwith "Undefinded var")
+        let var = trvar env.types var in
+        let () = Check.equal var.var_type expty in
+        let texp = TAssignExp { var; exp } in
+        mk_typed_exp Types.Unit texp
     | PIfExp { test; then_; else_ = Some else_ } ->
         let test = trexp test in
         let then_ = trexp then_ in
@@ -154,7 +154,6 @@ let rec transExp (env : env) exp =
         let texp = Typedtree.TLetExp { decs; body } in
         mk_typed_exp body.exp_type texp
     | PArrayExp { type_; size; init } -> (
-        let type_symbol = type_ in
         let type_ = Symbol.look env.types type_ in
         let size = trexp size in
         let init = trexp init in
@@ -164,10 +163,29 @@ let rec transExp (env : env) exp =
               let () = size |> get_type |> Check.int in
               init |> get_type |> Check.equal mem_type
             in
-            let texp = TArrayExp { type_ = type_symbol; size; init } in
+            let texp = TArrayExp { type_; size; init } in
             mk_typed_exp type_ texp
         | Some _ -> failwith "Must be array type."
         | None -> failwith "ArrayExp. Not found.")
+    | PRecordExp { type_; fields } -> (
+        let type_ =
+          Symbol.look env.types type_ |> function
+          | Some t -> t
+          | _ -> failwith "Type not found."
+        in
+        type_ |> function
+        | Types.Record (ls, _) ->
+            let fields = List.map (fun (s, e) -> (s, trexp e)) fields in
+            let () =
+              List.iter2
+                (fun (fsts, e) (snds, ty) ->
+                  let () = Check.sy_equal fsts snds in
+                  Check.equal ty @@ get_type e)
+                fields ls
+            in
+            let desc = Typedtree.TRecordExp { type_; fields } in
+            mk_typed_exp type_ desc
+        | _ -> failwith "")
   and trvar venv v =
     let field_type t m =
       match t with
