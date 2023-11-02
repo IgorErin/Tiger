@@ -1,7 +1,0 @@
-(library
- (name tiger_test)
- (modules parser)
- (libraries Tiger)
- (inline_tests)
- (preprocess
-  (pps ppx_expect ppx_sexp_conv ppx_inline_test ppx_assert)))

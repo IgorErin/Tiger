@@ -21,17 +21,11 @@ let read_file path =
 let () =
   let name = Config.get_path () in
   let code = read_file name in
-  let parse_tree =
-    let open Tiger in
-    let open Base in
-    Parser.of_string code |> Parser.parse |> function
-    | Either.First x -> x
-    | Either.Second msg -> failwith @@ Printf.sprintf "Parse error: %s" msg
-  in
-  if Config.default.dparsetree then
-    Printf.printf "%s" @@ Tiger.Parsetree.show_exp parse_tree;
-
-  let typedtree = Tiger.Semant.trans parse_tree in
-  if Config.is_dtypedtree () then
-    Tiger.Typedtree.pp_exp Format.str_formatter typedtree;
-  ()
+  let open Tiger in
+  Parser.of_string code |> Parser.parse |> function
+  | Core.Either.First tree ->
+      if Config.default.dparsetree then
+        Printf.printf "%s" @@ Tiger.Parsetree.show_exp tree
+  | Core.Either.Second _ ->
+      Printf.printf "Parsing error.";
+      ()
