@@ -27,7 +27,7 @@ and exp_desc =
   | TBreakExp
   | TLetExp of { decs : dec list; body : exp }
   | TArrayExp of { type_ : Types.t; size : exp; init : exp }
-  | TRecordExp of { type_ : Types.t; fields : (Symbol.t * exp) list }
+  | TRecordExp of { type_ : Types.t; fields : (Symbol.t * Types.t * exp) list }
 [@@deriving show]
 
 and exp = { exp_desc : exp_desc; exp_type : Types.t }
