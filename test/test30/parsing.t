@@ -13,18 +13,18 @@
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PTypeDec
-        [{ Parsetree.ptd_name = (0, "a");
-           ptd_type = (Parsetree.ArrayTy (1, "int")) };
-          { Parsetree.ptd_name = (2, "b");
-            ptd_type = (Parsetree.NameTy (0, "a")) }
+        [{ Parsetree.ptd_name = (12, "a");
+           ptd_type = (Parsetree.ArrayTy (10, "int")) };
+          { Parsetree.ptd_name = (13, "b");
+            ptd_type = (Parsetree.NameTy (12, "a")) }
           ]);
-      Parsetree.PVarDec {name = (3, "arr1"); escape = ref (true);
-        type_ = (Some (0, "a"));
+      Parsetree.PVarDec {name = (14, "arr1"); escape = ref (true);
+        type_ = (Some (12, "a"));
         init =
-        Parsetree.PArrayExp {type_ = (2, "b"); size = (Parsetree.PIntExp 10);
+        Parsetree.PArrayExp {type_ = (13, "b"); size = (Parsetree.PIntExp 10);
           init = (Parsetree.PIntExp 0)}}
       ];
     body =
     (Parsetree.PVarExp
-       (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (3, "arr1")),
+       (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (14, "arr1")),
           (Parsetree.PIntExp 2))))}

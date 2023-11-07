@@ -5,14 +5,14 @@
   	var a := 0
   	var a := " "
   in
-  	0
+  	a
   end
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PLetExp {
     decs =
-    [Parsetree.PVarDec {name = (0, "a"); escape = ref (true); type_ = None;
+    [Parsetree.PVarDec {name = (12, "a"); escape = ref (true); type_ = None;
        init = (Parsetree.PIntExp 0)};
-      Parsetree.PVarDec {name = (0, "a"); escape = ref (true); type_ = None;
+      Parsetree.PVarDec {name = (12, "a"); escape = ref (true); type_ = None;
         init = (Parsetree.PStringExp " ")}
       ];
-    body = (Parsetree.PIntExp 0)}
+    body = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")))}

@@ -34,71 +34,71 @@
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PLetExp {
     decs =
-    [Parsetree.PVarDec {name = (0, "N"); escape = ref (true); type_ = None;
+    [Parsetree.PVarDec {name = (12, "N"); escape = ref (true); type_ = None;
        init = (Parsetree.PIntExp 8)};
       (Parsetree.PTypeDec
-         [{ Parsetree.ptd_name = (1, "intArray");
-            ptd_type = (Parsetree.ArrayTy (2, "int")) }
+         [{ Parsetree.ptd_name = (13, "intArray");
+            ptd_type = (Parsetree.ArrayTy (10, "int")) }
            ]);
-      Parsetree.PVarDec {name = (3, "row"); escape = ref (true); type_ = None;
+      Parsetree.PVarDec {name = (14, "row"); escape = ref (true); type_ = None;
         init =
-        Parsetree.PArrayExp {type_ = (1, "intArray");
-          size = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "N")));
+        Parsetree.PArrayExp {type_ = (13, "intArray");
+          size = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "N")));
           init = (Parsetree.PIntExp 0)}};
-      Parsetree.PVarDec {name = (4, "col"); escape = ref (true); type_ = None;
+      Parsetree.PVarDec {name = (15, "col"); escape = ref (true); type_ = None;
         init =
-        Parsetree.PArrayExp {type_ = (1, "intArray");
-          size = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "N")));
+        Parsetree.PArrayExp {type_ = (13, "intArray");
+          size = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "N")));
           init = (Parsetree.PIntExp 0)}};
-      Parsetree.PVarDec {name = (5, "diag1"); escape = ref (true);
+      Parsetree.PVarDec {name = (16, "diag1"); escape = ref (true);
         type_ = None;
         init =
-        Parsetree.PArrayExp {type_ = (1, "intArray");
+        Parsetree.PArrayExp {type_ = (13, "intArray");
           size =
           Parsetree.POpExp {
             left =
             Parsetree.POpExp {
-              left = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "N")));
+              left = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "N")));
               oper = Parsetree.PlusOp;
-              right = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "N")))};
+              right = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "N")))};
             oper = Parsetree.MinusOp; right = (Parsetree.PIntExp 1)};
           init = (Parsetree.PIntExp 0)}};
-      Parsetree.PVarDec {name = (6, "diag2"); escape = ref (true);
+      Parsetree.PVarDec {name = (17, "diag2"); escape = ref (true);
         type_ = None;
         init =
-        Parsetree.PArrayExp {type_ = (1, "intArray");
+        Parsetree.PArrayExp {type_ = (13, "intArray");
           size =
           Parsetree.POpExp {
             left =
             Parsetree.POpExp {
-              left = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "N")));
+              left = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "N")));
               oper = Parsetree.PlusOp;
-              right = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "N")))};
+              right = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "N")))};
             oper = Parsetree.MinusOp; right = (Parsetree.PIntExp 1)};
           init = (Parsetree.PIntExp 0)}};
       (Parsetree.PFunctionDec
-         [{ Parsetree.pfun_name = (7, "printboard"); pfun_params = [];
+         [{ Parsetree.pfun_name = (18, "printboard"); pfun_params = [];
             pfun_result = None;
             pfun_body =
             (Parsetree.PSeqExp
-               [Parsetree.PForExp {var = (9, "i"); escape = ref (true);
+               [Parsetree.PForExp {var = (20, "i"); escape = ref (true);
                   lb = (Parsetree.PIntExp 0);
                   hb =
                   Parsetree.POpExp {
-                    left = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "N")));
+                    left = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "N")));
                     oper = Parsetree.MinusOp; right = (Parsetree.PIntExp 1)};
                   body =
                   (Parsetree.PSeqExp
-                     [Parsetree.PForExp {var = (10, "j"); escape = ref (true);
+                     [Parsetree.PForExp {var = (21, "j"); escape = ref (true);
                         lb = (Parsetree.PIntExp 0);
                         hb =
                         Parsetree.POpExp {
                           left =
-                          (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "N")));
+                          (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "N")));
                           oper = Parsetree.MinusOp;
                           right = (Parsetree.PIntExp 1)};
                         body =
-                        Parsetree.PCallExp {func = (11, "print");
+                        Parsetree.PCallExp {func = (0, "print");
                           args =
                           [Parsetree.PIfExp {
                              test =
@@ -106,28 +106,28 @@
                                left =
                                (Parsetree.PVarExp
                                   (Parsetree.PSubscriptVar (
-                                     (Parsetree.PSimpleVar (4, "col")),
+                                     (Parsetree.PSimpleVar (15, "col")),
                                      (Parsetree.PVarExp
-                                        (Parsetree.PSimpleVar (9, "i")))
+                                        (Parsetree.PSimpleVar (20, "i")))
                                      )));
                                oper = Parsetree.EqOp;
                                right =
                                (Parsetree.PVarExp
-                                  (Parsetree.PSimpleVar (10, "j")))};
+                                  (Parsetree.PSimpleVar (21, "j")))};
                              then_ = (Parsetree.PStringExp " O");
                              else_ = (Some (Parsetree.PStringExp " ."))}
                             ]}};
-                       Parsetree.PCallExp {func = (11, "print");
+                       Parsetree.PCallExp {func = (0, "print");
                          args = [(Parsetree.PStringExp "\\n")]}
                        ])};
-                 Parsetree.PCallExp {func = (11, "print");
+                 Parsetree.PCallExp {func = (0, "print");
                    args = [(Parsetree.PStringExp "\\n")]}
                  ])
             };
-           { Parsetree.pfun_name = (13, "try");
+           { Parsetree.pfun_name = (23, "try");
              pfun_params =
-             [{ Parsetree.pfd_name = (14, "c"); pfd_escape = ref (true);
-                pfd_type = (2, "int") }
+             [{ Parsetree.pfd_name = (24, "c"); pfd_escape = ref (true);
+                pfd_type = (10, "int") }
                ];
              pfun_result = None;
              pfun_body =
@@ -136,19 +136,20 @@
                    test =
                    Parsetree.POpExp {
                      left =
-                     (Parsetree.PVarExp (Parsetree.PSimpleVar (14, "c")));
+                     (Parsetree.PVarExp (Parsetree.PSimpleVar (24, "c")));
                      oper = Parsetree.EqOp;
                      right =
-                     (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "N")))};
+                     (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "N")))};
                    then_ =
-                   Parsetree.PCallExp {func = (7, "printboard"); args = []};
+                   Parsetree.PCallExp {func = (18, "printboard"); args = []};
                    else_ =
-                   (Some Parsetree.PForExp {var = (15, "r");
+                   (Some Parsetree.PForExp {var = (25, "r");
                            escape = ref (true); lb = (Parsetree.PIntExp 0);
                            hb =
                            Parsetree.POpExp {
                              left =
-                             (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "N")));
+                             (Parsetree.PVarExp
+                                (Parsetree.PSimpleVar (12, "N")));
                              oper = Parsetree.MinusOp;
                              right = (Parsetree.PIntExp 1)};
                            body =
@@ -162,9 +163,9 @@
                                    left =
                                    (Parsetree.PVarExp
                                       (Parsetree.PSubscriptVar (
-                                         (Parsetree.PSimpleVar (3, "row")),
+                                         (Parsetree.PSimpleVar (14, "row")),
                                          (Parsetree.PVarExp
-                                            (Parsetree.PSimpleVar (15, "r")))
+                                            (Parsetree.PSimpleVar (25, "r")))
                                          )));
                                    oper = Parsetree.EqOp;
                                    right = (Parsetree.PIntExp 0)};
@@ -173,15 +174,15 @@
                                    left =
                                    (Parsetree.PVarExp
                                       (Parsetree.PSubscriptVar (
-                                         (Parsetree.PSimpleVar (5, "diag1")),
+                                         (Parsetree.PSimpleVar (16, "diag1")),
                                          Parsetree.POpExp {
                                            left =
                                            (Parsetree.PVarExp
-                                              (Parsetree.PSimpleVar (15, "r")));
+                                              (Parsetree.PSimpleVar (25, "r")));
                                            oper = Parsetree.PlusOp;
                                            right =
                                            (Parsetree.PVarExp
-                                              (Parsetree.PSimpleVar (14, "c")))}
+                                              (Parsetree.PSimpleVar (24, "c")))}
                                          )));
                                    oper = Parsetree.EqOp;
                                    right = (Parsetree.PIntExp 0)};
@@ -191,19 +192,19 @@
                                  left =
                                  (Parsetree.PVarExp
                                     (Parsetree.PSubscriptVar (
-                                       (Parsetree.PSimpleVar (6, "diag2")),
+                                       (Parsetree.PSimpleVar (17, "diag2")),
                                        Parsetree.POpExp {
                                          left =
                                          Parsetree.POpExp {
                                            left =
                                            (Parsetree.PVarExp
-                                              (Parsetree.PSimpleVar (15, "r")));
+                                              (Parsetree.PSimpleVar (25, "r")));
                                            oper = Parsetree.PlusOp;
                                            right = (Parsetree.PIntExp 7)};
                                          oper = Parsetree.MinusOp;
                                          right =
                                          (Parsetree.PVarExp
-                                            (Parsetree.PSimpleVar (14, "c")))}
+                                            (Parsetree.PSimpleVar (24, "c")))}
                                        )));
                                  oper = Parsetree.EqOp;
                                  right = (Parsetree.PIntExp 0)};
@@ -213,100 +214,100 @@
                                 [Parsetree.PAssignExp {
                                    var =
                                    (Parsetree.PSubscriptVar (
-                                      (Parsetree.PSimpleVar (3, "row")),
+                                      (Parsetree.PSimpleVar (14, "row")),
                                       (Parsetree.PVarExp
-                                         (Parsetree.PSimpleVar (15, "r")))
+                                         (Parsetree.PSimpleVar (25, "r")))
                                       ));
                                    exp = (Parsetree.PIntExp 1)};
                                   Parsetree.PAssignExp {
                                     var =
                                     (Parsetree.PSubscriptVar (
-                                       (Parsetree.PSimpleVar (5, "diag1")),
+                                       (Parsetree.PSimpleVar (16, "diag1")),
                                        Parsetree.POpExp {
                                          left =
                                          (Parsetree.PVarExp
-                                            (Parsetree.PSimpleVar (15, "r")));
+                                            (Parsetree.PSimpleVar (25, "r")));
                                          oper = Parsetree.PlusOp;
                                          right =
                                          (Parsetree.PVarExp
-                                            (Parsetree.PSimpleVar (14, "c")))}
+                                            (Parsetree.PSimpleVar (24, "c")))}
                                        ));
                                     exp = (Parsetree.PIntExp 1)};
                                   Parsetree.PAssignExp {
                                     var =
                                     (Parsetree.PSubscriptVar (
-                                       (Parsetree.PSimpleVar (6, "diag2")),
+                                       (Parsetree.PSimpleVar (17, "diag2")),
                                        Parsetree.POpExp {
                                          left =
                                          Parsetree.POpExp {
                                            left =
                                            (Parsetree.PVarExp
-                                              (Parsetree.PSimpleVar (15, "r")));
+                                              (Parsetree.PSimpleVar (25, "r")));
                                            oper = Parsetree.PlusOp;
                                            right = (Parsetree.PIntExp 7)};
                                          oper = Parsetree.MinusOp;
                                          right =
                                          (Parsetree.PVarExp
-                                            (Parsetree.PSimpleVar (14, "c")))}
+                                            (Parsetree.PSimpleVar (24, "c")))}
                                        ));
                                     exp = (Parsetree.PIntExp 1)};
                                   Parsetree.PAssignExp {
                                     var =
                                     (Parsetree.PSubscriptVar (
-                                       (Parsetree.PSimpleVar (4, "col")),
+                                       (Parsetree.PSimpleVar (15, "col")),
                                        (Parsetree.PVarExp
-                                          (Parsetree.PSimpleVar (14, "c")))
+                                          (Parsetree.PSimpleVar (24, "c")))
                                        ));
                                     exp =
                                     (Parsetree.PVarExp
-                                       (Parsetree.PSimpleVar (15, "r")))};
-                                  Parsetree.PCallExp {func = (13, "try");
+                                       (Parsetree.PSimpleVar (25, "r")))};
+                                  Parsetree.PCallExp {func = (23, "try");
                                     args =
                                     [Parsetree.POpExp {
                                        left =
                                        (Parsetree.PVarExp
-                                          (Parsetree.PSimpleVar (14, "c")));
+                                          (Parsetree.PSimpleVar (24, "c")));
                                        oper = Parsetree.PlusOp;
                                        right = (Parsetree.PIntExp 1)}
                                       ]};
                                   Parsetree.PAssignExp {
                                     var =
                                     (Parsetree.PSubscriptVar (
-                                       (Parsetree.PSimpleVar (3, "row")),
+                                       (Parsetree.PSimpleVar (14, "row")),
                                        (Parsetree.PVarExp
-                                          (Parsetree.PSimpleVar (15, "r")))
+                                          (Parsetree.PSimpleVar (25, "r")))
                                        ));
                                     exp = (Parsetree.PIntExp 0)};
                                   Parsetree.PAssignExp {
                                     var =
                                     (Parsetree.PSubscriptVar (
-                                       (Parsetree.PSimpleVar (5, "diag1")),
+                                       (Parsetree.PSimpleVar (16, "diag1")),
                                        Parsetree.POpExp {
                                          left =
                                          (Parsetree.PVarExp
-                                            (Parsetree.PSimpleVar (15, "r")));
+                                            (Parsetree.PSimpleVar (25, "r")));
                                          oper = Parsetree.PlusOp;
                                          right =
                                          (Parsetree.PVarExp
-                                            (Parsetree.PSimpleVar (14, "c")))}
+                                            (Parsetree.PSimpleVar (24, "c")))}
                                        ));
                                     exp = (Parsetree.PIntExp 0)};
                                   Parsetree.PAssignExp {
                                     var =
                                     (Parsetree.PSubscriptVar (
-                                       (Parsetree.PSimpleVar (6, "diag2")),
+                                       (Parsetree.PSimpleVar (17, "diag2")),
                                        Parsetree.POpExp {
                                          left =
                                          Parsetree.POpExp {
                                            left =
                                            (Parsetree.PVarExp
-                                              (Parsetree.PSimpleVar (15, "r")));
+                                              (Parsetree.PSimpleVar (25, "r")));
                                            oper = Parsetree.PlusOp;
                                            right = (Parsetree.PIntExp 7)};
                                          oper = Parsetree.MinusOp;
                                          right =
                                          (Parsetree.PVarExp
-                                            (Parsetree.PSimpleVar (14, "c")))}
+                                            (Parsetree.PSimpleVar (24, "c")))}
                                        ));
                                     exp = (Parsetree.PIntExp 0)}
                                   ]);
@@ -316,4 +317,4 @@
            ])
       ];
     body =
-    Parsetree.PCallExp {func = (13, "try"); args = [(Parsetree.PIntExp 0)]}}
+    Parsetree.PCallExp {func = (23, "try"); args = [(Parsetree.PIntExp 0)]}}

@@ -11,25 +11,25 @@
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PTypeDec
-        [{ Parsetree.ptd_name = (0, "rectype");
+        [{ Parsetree.ptd_name = (12, "rectype");
            ptd_type =
            (Parsetree.RecordTy
-              [{ Parsetree.pfd_name = (1, "name"); pfd_escape = ref (true);
-                 pfd_type = (2, "string") };
-                { Parsetree.pfd_name = (3, "id"); pfd_escape = ref (true);
-                  pfd_type = (4, "int") }
+              [{ Parsetree.pfd_name = (13, "name"); pfd_escape = ref (true);
+                 pfd_type = (11, "string") };
+                { Parsetree.pfd_name = (14, "id"); pfd_escape = ref (true);
+                  pfd_type = (10, "int") }
                 ])
            }
           ]);
-      Parsetree.PVarDec {name = (5, "b"); escape = ref (true);
-        type_ = (Some (0, "rectype")); init = Parsetree.PNilExp}
+      Parsetree.PVarDec {name = (15, "b"); escape = ref (true);
+        type_ = (Some (12, "rectype")); init = Parsetree.PNilExp}
       ];
     body =
     (Parsetree.PSeqExp
        [Parsetree.POpExp {
-          left = (Parsetree.PVarExp (Parsetree.PSimpleVar (5, "b")));
+          left = (Parsetree.PVarExp (Parsetree.PSimpleVar (15, "b")));
           oper = Parsetree.EqOp; right = Parsetree.PNilExp};
          Parsetree.POpExp {
-           left = (Parsetree.PVarExp (Parsetree.PSimpleVar (5, "b")));
+           left = (Parsetree.PVarExp (Parsetree.PSimpleVar (15, "b")));
            oper = Parsetree.NeqOp; right = Parsetree.PNilExp}
          ])}

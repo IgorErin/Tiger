@@ -14,14 +14,14 @@
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PTypeDec
-        [{ Parsetree.ptd_name = (0, "a");
-           ptd_type = (Parsetree.NameTy (1, "c")) };
-          { Parsetree.ptd_name = (2, "b");
-            ptd_type = (Parsetree.NameTy (0, "a")) };
-          { Parsetree.ptd_name = (1, "c");
-            ptd_type = (Parsetree.NameTy (3, "d")) };
-          { Parsetree.ptd_name = (3, "d");
-            ptd_type = (Parsetree.NameTy (0, "a")) }
+        [{ Parsetree.ptd_name = (12, "a");
+           ptd_type = (Parsetree.NameTy (13, "c")) };
+          { Parsetree.ptd_name = (14, "b");
+            ptd_type = (Parsetree.NameTy (12, "a")) };
+          { Parsetree.ptd_name = (13, "c");
+            ptd_type = (Parsetree.NameTy (15, "d")) };
+          { Parsetree.ptd_name = (15, "d");
+            ptd_type = (Parsetree.NameTy (12, "a")) }
           ])
       ];
     body = (Parsetree.PStringExp "")}

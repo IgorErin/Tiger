@@ -9,17 +9,17 @@
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PLetExp {
     decs =
-    [Parsetree.PVarDec {name = (0, "a"); escape = ref (true); type_ = None;
+    [Parsetree.PVarDec {name = (12, "a"); escape = ref (true); type_ = None;
        init = (Parsetree.PIntExp 0)}
       ];
     body =
-    Parsetree.PForExp {var = (2, "i"); escape = ref (true);
+    Parsetree.PForExp {var = (14, "i"); escape = ref (true);
       lb = (Parsetree.PIntExp 0); hb = (Parsetree.PIntExp 100);
       body =
       (Parsetree.PSeqExp
-         [Parsetree.PAssignExp {var = (Parsetree.PSimpleVar (0, "a"));
+         [Parsetree.PAssignExp {var = (Parsetree.PSimpleVar (12, "a"));
             exp =
             Parsetree.POpExp {
-              left = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "a")));
+              left = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")));
               oper = Parsetree.PlusOp; right = (Parsetree.PIntExp 1)}};
            (Parsetree.PSeqExp [])])}}

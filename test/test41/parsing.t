@@ -6,23 +6,33 @@
   	let
   		type a = string
   	in
-  		0
+  		let
+  			var a:a := "" 
+  		in
+  			a
+  		end 
   	end
   end
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PTypeDec
-        [{ Parsetree.ptd_name = (0, "a");
-           ptd_type = (Parsetree.NameTy (1, "int")) }
+        [{ Parsetree.ptd_name = (12, "a");
+           ptd_type = (Parsetree.NameTy (10, "int")) }
           ])
       ];
     body =
     Parsetree.PLetExp {
       decs =
       [(Parsetree.PTypeDec
-          [{ Parsetree.ptd_name = (0, "a");
-             ptd_type = (Parsetree.NameTy (2, "string")) }
+          [{ Parsetree.ptd_name = (12, "a");
+             ptd_type = (Parsetree.NameTy (11, "string")) }
             ])
         ];
-      body = (Parsetree.PIntExp 0)}}
+      body =
+      Parsetree.PLetExp {
+        decs =
+        [Parsetree.PVarDec {name = (12, "a"); escape = ref (true);
+           type_ = (Some (12, "a")); init = (Parsetree.PStringExp "")}
+          ];
+        body = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")))}}}

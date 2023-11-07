@@ -9,10 +9,10 @@
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PLetExp {
     decs =
-    [Parsetree.PVarDec {name = (0, "a"); escape = ref (true); type_ = None;
+    [Parsetree.PVarDec {name = (12, "a"); escape = ref (true); type_ = None;
        init = (Parsetree.PSeqExp [])}
       ];
     body =
     Parsetree.POpExp {
-      left = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "a")));
+      left = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")));
       oper = Parsetree.PlusOp; right = (Parsetree.PIntExp 3)}}

@@ -12,20 +12,20 @@
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PFunctionDec
-        [{ Parsetree.pfun_name = (0, "g");
+        [{ Parsetree.pfun_name = (12, "g");
            pfun_params =
-           [{ Parsetree.pfd_name = (1, "a"); pfd_escape = ref (true);
-              pfd_type = (2, "int") }
+           [{ Parsetree.pfd_name = (13, "a"); pfd_escape = ref (true);
+              pfd_type = (10, "int") }
              ];
-           pfun_result = (Some (2, "int"));
-           pfun_body = (Parsetree.PVarExp (Parsetree.PSimpleVar (1, "a"))) };
-          { Parsetree.pfun_name = (0, "g");
+           pfun_result = (Some (10, "int"));
+           pfun_body = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "a"))) };
+          { Parsetree.pfun_name = (12, "g");
             pfun_params =
-            [{ Parsetree.pfd_name = (1, "a"); pfd_escape = ref (true);
-               pfd_type = (2, "int") }
+            [{ Parsetree.pfd_name = (13, "a"); pfd_escape = ref (true);
+               pfd_type = (10, "int") }
               ];
-            pfun_result = (Some (2, "int"));
-            pfun_body = (Parsetree.PVarExp (Parsetree.PSimpleVar (1, "a"))) }
+            pfun_result = (Some (10, "int"));
+            pfun_body = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "a"))) }
           ])
       ];
     body = (Parsetree.PIntExp 0)}

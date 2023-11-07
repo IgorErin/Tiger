@@ -10,6 +10,6 @@
     body =
     (Parsetree.PSeqExp
        [Parsetree.POpExp {
-          left = (Parsetree.PVarExp (Parsetree.PSimpleVar (1, "i")));
+          left = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "i")));
           oper = Parsetree.PlusOp; right = (Parsetree.PIntExp 1)};
          (Parsetree.PSeqExp [])])}

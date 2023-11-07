@@ -5,6 +5,10 @@ in
 	let
 		type a = string
 	in
-		0
+		let
+			var a:a := "" 
+		in
+			a
+		end 
 	end
 end

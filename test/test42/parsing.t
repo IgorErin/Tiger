@@ -33,74 +33,74 @@
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PTypeDec
-        [{ Parsetree.ptd_name = (0, "arrtype1");
-           ptd_type = (Parsetree.ArrayTy (1, "int")) };
-          { Parsetree.ptd_name = (2, "rectype1");
+        [{ Parsetree.ptd_name = (12, "arrtype1");
+           ptd_type = (Parsetree.ArrayTy (10, "int")) };
+          { Parsetree.ptd_name = (13, "rectype1");
             ptd_type =
             (Parsetree.RecordTy
-               [{ Parsetree.pfd_name = (3, "name"); pfd_escape = ref (true);
-                  pfd_type = (4, "string") };
-                 { Parsetree.pfd_name = (5, "address");
-                   pfd_escape = ref (true); pfd_type = (4, "string") };
-                 { Parsetree.pfd_name = (6, "id"); pfd_escape = ref (true);
-                   pfd_type = (1, "int") };
-                 { Parsetree.pfd_name = (7, "age"); pfd_escape = ref (true);
-                   pfd_type = (1, "int") }
+               [{ Parsetree.pfd_name = (14, "name"); pfd_escape = ref (true);
+                  pfd_type = (11, "string") };
+                 { Parsetree.pfd_name = (15, "address");
+                   pfd_escape = ref (true); pfd_type = (11, "string") };
+                 { Parsetree.pfd_name = (16, "id"); pfd_escape = ref (true);
+                   pfd_type = (10, "int") };
+                 { Parsetree.pfd_name = (17, "age"); pfd_escape = ref (true);
+                   pfd_type = (10, "int") }
                  ])
             };
-          { Parsetree.ptd_name = (8, "arrtype2");
-            ptd_type = (Parsetree.ArrayTy (2, "rectype1")) };
-          { Parsetree.ptd_name = (9, "rectype2");
+          { Parsetree.ptd_name = (18, "arrtype2");
+            ptd_type = (Parsetree.ArrayTy (13, "rectype1")) };
+          { Parsetree.ptd_name = (19, "rectype2");
             ptd_type =
             (Parsetree.RecordTy
-               [{ Parsetree.pfd_name = (3, "name"); pfd_escape = ref (true);
-                  pfd_type = (4, "string") };
-                 { Parsetree.pfd_name = (10, "dates"); pfd_escape = ref (true);
-                   pfd_type = (0, "arrtype1") }
+               [{ Parsetree.pfd_name = (14, "name"); pfd_escape = ref (true);
+                  pfd_type = (11, "string") };
+                 { Parsetree.pfd_name = (20, "dates"); pfd_escape = ref (true);
+                   pfd_type = (12, "arrtype1") }
                  ])
             };
-          { Parsetree.ptd_name = (11, "arrtype3");
-            ptd_type = (Parsetree.ArrayTy (4, "string")) }
+          { Parsetree.ptd_name = (21, "arrtype3");
+            ptd_type = (Parsetree.ArrayTy (11, "string")) }
           ]);
-      Parsetree.PVarDec {name = (12, "arr1"); escape = ref (true);
+      Parsetree.PVarDec {name = (22, "arr1"); escape = ref (true);
         type_ = None;
         init =
-        Parsetree.PArrayExp {type_ = (0, "arrtype1");
+        Parsetree.PArrayExp {type_ = (12, "arrtype1");
           size = (Parsetree.PIntExp 10); init = (Parsetree.PIntExp 0)}};
-      Parsetree.PVarDec {name = (13, "arr2"); escape = ref (true);
+      Parsetree.PVarDec {name = (23, "arr2"); escape = ref (true);
         type_ = None;
         init =
-        Parsetree.PArrayExp {type_ = (8, "arrtype2");
+        Parsetree.PArrayExp {type_ = (18, "arrtype2");
           size = (Parsetree.PIntExp 5);
           init =
-          Parsetree.PRecordExp {type_ = (2, "rectype1");
+          Parsetree.PRecordExp {type_ = (13, "rectype1");
             fields =
-            [((3, "name"), (Parsetree.PStringExp "aname"));
-              ((5, "address"), (Parsetree.PStringExp "somewhere"));
-              ((6, "id"), (Parsetree.PIntExp 0));
-              ((7, "age"), (Parsetree.PIntExp 0))]}}};
-      Parsetree.PVarDec {name = (14, "arr3"); escape = ref (true);
-        type_ = (Some (11, "arrtype3"));
+            [((14, "name"), (Parsetree.PStringExp "aname"));
+              ((15, "address"), (Parsetree.PStringExp "somewhere"));
+              ((16, "id"), (Parsetree.PIntExp 0));
+              ((17, "age"), (Parsetree.PIntExp 0))]}}};
+      Parsetree.PVarDec {name = (24, "arr3"); escape = ref (true);
+        type_ = (Some (21, "arrtype3"));
         init =
-        Parsetree.PArrayExp {type_ = (11, "arrtype3");
+        Parsetree.PArrayExp {type_ = (21, "arrtype3");
           size = (Parsetree.PIntExp 100); init = (Parsetree.PStringExp "")}};
-      Parsetree.PVarDec {name = (15, "rec1"); escape = ref (true);
+      Parsetree.PVarDec {name = (25, "rec1"); escape = ref (true);
         type_ = None;
         init =
-        Parsetree.PRecordExp {type_ = (2, "rectype1");
+        Parsetree.PRecordExp {type_ = (13, "rectype1");
           fields =
-          [((3, "name"), (Parsetree.PStringExp "Kapoios"));
-            ((5, "address"), (Parsetree.PStringExp "Kapou"));
-            ((6, "id"), (Parsetree.PIntExp 2432));
-            ((7, "age"), (Parsetree.PIntExp 44))]}};
-      Parsetree.PVarDec {name = (16, "rec2"); escape = ref (true);
+          [((14, "name"), (Parsetree.PStringExp "Kapoios"));
+            ((15, "address"), (Parsetree.PStringExp "Kapou"));
+            ((16, "id"), (Parsetree.PIntExp 2432));
+            ((17, "age"), (Parsetree.PIntExp 44))]}};
+      Parsetree.PVarDec {name = (26, "rec2"); escape = ref (true);
         type_ = None;
         init =
-        Parsetree.PRecordExp {type_ = (9, "rectype2");
+        Parsetree.PRecordExp {type_ = (19, "rectype2");
           fields =
-          [((3, "name"), (Parsetree.PStringExp "Allos"));
-            ((10, "dates"),
-             Parsetree.PArrayExp {type_ = (0, "arrtype1");
+          [((14, "name"), (Parsetree.PStringExp "Allos"));
+            ((20, "dates"),
+             Parsetree.PArrayExp {type_ = (12, "arrtype1");
                size = (Parsetree.PIntExp 3); init = (Parsetree.PIntExp 1900)})
             ]}}
       ];
@@ -108,50 +108,50 @@
     (Parsetree.PSeqExp
        [Parsetree.PAssignExp {
           var =
-          (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (12, "arr1")),
+          (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (22, "arr1")),
              (Parsetree.PIntExp 0)));
           exp = (Parsetree.PIntExp 1)};
          Parsetree.PAssignExp {
            var =
-           (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (12, "arr1")),
+           (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (22, "arr1")),
               (Parsetree.PIntExp 9)));
            exp = (Parsetree.PIntExp 3)};
          Parsetree.PAssignExp {
            var =
            (Parsetree.PFieldVar (
-              (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (13, "arr2")),
+              (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (23, "arr2")),
                  (Parsetree.PIntExp 3))),
-              (3, "name")));
+              (14, "name")));
            exp = (Parsetree.PStringExp "kati")};
          Parsetree.PAssignExp {
            var =
            (Parsetree.PFieldVar (
-              (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (13, "arr2")),
+              (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (23, "arr2")),
                  (Parsetree.PIntExp 1))),
-              (7, "age")));
+              (17, "age")));
            exp = (Parsetree.PIntExp 23)};
          Parsetree.PAssignExp {
            var =
-           (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (14, "arr3")),
+           (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (24, "arr3")),
               (Parsetree.PIntExp 34)));
            exp = (Parsetree.PStringExp "sfd")};
          Parsetree.PAssignExp {
            var =
-           (Parsetree.PFieldVar ((Parsetree.PSimpleVar (15, "rec1")),
-              (3, "name")));
+           (Parsetree.PFieldVar ((Parsetree.PSimpleVar (25, "rec1")),
+              (14, "name")));
            exp = (Parsetree.PStringExp "sdf")};
          Parsetree.PAssignExp {
            var =
            (Parsetree.PSubscriptVar (
-              (Parsetree.PFieldVar ((Parsetree.PSimpleVar (16, "rec2")),
-                 (10, "dates"))),
+              (Parsetree.PFieldVar ((Parsetree.PSimpleVar (26, "rec2")),
+                 (20, "dates"))),
               (Parsetree.PIntExp 0)));
            exp = (Parsetree.PIntExp 2323)};
          Parsetree.PAssignExp {
            var =
            (Parsetree.PSubscriptVar (
-              (Parsetree.PFieldVar ((Parsetree.PSimpleVar (16, "rec2")),
-                 (10, "dates"))),
+              (Parsetree.PFieldVar ((Parsetree.PSimpleVar (26, "rec2")),
+                 (20, "dates"))),
               (Parsetree.PIntExp 2)));
            exp = (Parsetree.PIntExp 2323)}
          ])}

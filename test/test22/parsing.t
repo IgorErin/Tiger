@@ -11,25 +11,26 @@
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PTypeDec
-        [{ Parsetree.ptd_name = (0, "rectype");
+        [{ Parsetree.ptd_name = (12, "rectype");
            ptd_type =
            (Parsetree.RecordTy
-              [{ Parsetree.pfd_name = (1, "name"); pfd_escape = ref (true);
-                 pfd_type = (2, "string") };
-                { Parsetree.pfd_name = (3, "id"); pfd_escape = ref (true);
-                  pfd_type = (4, "int") }
+              [{ Parsetree.pfd_name = (13, "name"); pfd_escape = ref (true);
+                 pfd_type = (11, "string") };
+                { Parsetree.pfd_name = (14, "id"); pfd_escape = ref (true);
+                  pfd_type = (10, "int") }
                 ])
            }
           ]);
-      Parsetree.PVarDec {name = (5, "rec1"); escape = ref (true); type_ = None;
+      Parsetree.PVarDec {name = (15, "rec1"); escape = ref (true);
+        type_ = None;
         init =
-        Parsetree.PRecordExp {type_ = (0, "rectype");
+        Parsetree.PRecordExp {type_ = (12, "rectype");
           fields =
-          [((1, "name"), (Parsetree.PStringExp "Name"));
-            ((3, "id"), (Parsetree.PIntExp 0))]}}
+          [((13, "name"), (Parsetree.PStringExp "Name"));
+            ((14, "id"), (Parsetree.PIntExp 0))]}}
       ];
     body =
     Parsetree.PAssignExp {
       var =
-      (Parsetree.PFieldVar ((Parsetree.PSimpleVar (5, "rec1")), (6, "nam")));
+      (Parsetree.PFieldVar ((Parsetree.PSimpleVar (15, "rec1")), (16, "nam")));
       exp = (Parsetree.PStringExp "asd")}}

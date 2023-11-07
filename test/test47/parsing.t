@@ -14,14 +14,14 @@
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PTypeDec
-        [{ Parsetree.ptd_name = (0, "a");
-           ptd_type = (Parsetree.NameTy (1, "int")) }
+        [{ Parsetree.ptd_name = (12, "a");
+           ptd_type = (Parsetree.NameTy (10, "int")) }
           ]);
-      Parsetree.PVarDec {name = (2, "b"); escape = ref (true); type_ = None;
+      Parsetree.PVarDec {name = (13, "b"); escape = ref (true); type_ = None;
         init = (Parsetree.PIntExp 4)};
       (Parsetree.PTypeDec
-         [{ Parsetree.ptd_name = (0, "a");
-            ptd_type = (Parsetree.NameTy (3, "string")) }
+         [{ Parsetree.ptd_name = (12, "a");
+            ptd_type = (Parsetree.NameTy (11, "string")) }
            ])
       ];
     body = (Parsetree.PIntExp 0)}

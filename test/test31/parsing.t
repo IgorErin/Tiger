@@ -8,7 +8,7 @@
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PLetExp {
     decs =
-    [Parsetree.PVarDec {name = (0, "a"); escape = ref (true);
-       type_ = (Some (1, "int")); init = (Parsetree.PStringExp " ")}
+    [Parsetree.PVarDec {name = (12, "a"); escape = ref (true);
+       type_ = (Some (10, "int")); init = (Parsetree.PStringExp " ")}
       ];
-    body = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "a")))}
+    body = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")))}

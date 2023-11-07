@@ -4,6 +4,8 @@
 let
 	type a = int
 	type a = string
+
+	var a: a := "" 
 in
-	0
+	a
 end

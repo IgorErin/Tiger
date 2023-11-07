@@ -1,14 +1,23 @@
   $  cat ./code.tig
-  /* error : type constraint and init value differ */
-  let 
-  	var a:int := " "
+  /* error : initializing exp and array type differ */
+  
+  let
+  	type arrayty = array of int
+  
+  	var a := arrayty [10] of " "
   in
-  	a
+  	0
   end
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PLetExp {
     decs =
-    [Parsetree.PVarDec {name = (0, "a"); escape = ref (true);
-       type_ = (Some (1, "int")); init = (Parsetree.PStringExp " ")}
+    [(Parsetree.PTypeDec
+        [{ Parsetree.ptd_name = (12, "arrayty");
+           ptd_type = (Parsetree.ArrayTy (10, "int")) }
+          ]);
+      Parsetree.PVarDec {name = (13, "a"); escape = ref (true); type_ = None;
+        init =
+        Parsetree.PArrayExp {type_ = (12, "arrayty");
+          size = (Parsetree.PIntExp 10); init = (Parsetree.PStringExp " ")}}
       ];
-    body = (Parsetree.PVarExp (Parsetree.PSimpleVar (0, "a")))}
+    body = (Parsetree.PIntExp 0)}

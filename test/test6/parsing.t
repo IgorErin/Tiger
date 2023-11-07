@@ -15,36 +15,36 @@
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PFunctionDec
-        [{ Parsetree.pfun_name = (0, "do_nothing1");
+        [{ Parsetree.pfun_name = (12, "do_nothing1");
            pfun_params =
-           [{ Parsetree.pfd_name = (1, "a"); pfd_escape = ref (true);
-              pfd_type = (2, "int") };
-             { Parsetree.pfd_name = (3, "b"); pfd_escape = ref (true);
-               pfd_type = (4, "string") }
+           [{ Parsetree.pfd_name = (13, "a"); pfd_escape = ref (true);
+              pfd_type = (10, "int") };
+             { Parsetree.pfd_name = (14, "b"); pfd_escape = ref (true);
+               pfd_type = (11, "string") }
              ];
            pfun_result = None;
            pfun_body =
-           Parsetree.PCallExp {func = (5, "do_nothing2");
+           Parsetree.PCallExp {func = (15, "do_nothing2");
              args =
              [Parsetree.POpExp {
-                left = (Parsetree.PVarExp (Parsetree.PSimpleVar (1, "a")));
+                left = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "a")));
                 oper = Parsetree.PlusOp; right = (Parsetree.PIntExp 1)}
                ]}
            };
-          { Parsetree.pfun_name = (5, "do_nothing2");
+          { Parsetree.pfun_name = (15, "do_nothing2");
             pfun_params =
-            [{ Parsetree.pfd_name = (6, "d"); pfd_escape = ref (true);
-               pfd_type = (2, "int") }
+            [{ Parsetree.pfd_name = (16, "d"); pfd_escape = ref (true);
+               pfd_type = (10, "int") }
               ];
             pfun_result = None;
             pfun_body =
-            Parsetree.PCallExp {func = (0, "do_nothing1");
+            Parsetree.PCallExp {func = (12, "do_nothing1");
               args =
-              [(Parsetree.PVarExp (Parsetree.PSimpleVar (6, "d")));
+              [(Parsetree.PVarExp (Parsetree.PSimpleVar (16, "d")));
                 (Parsetree.PStringExp "str")]}
             }
           ])
       ];
     body =
-    Parsetree.PCallExp {func = (0, "do_nothing1");
+    Parsetree.PCallExp {func = (12, "do_nothing1");
       args = [(Parsetree.PIntExp 0); (Parsetree.PStringExp "str2")]}}

@@ -13,28 +13,28 @@
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PTypeDec
-        [{ Parsetree.ptd_name = (0, "tree");
+        [{ Parsetree.ptd_name = (12, "tree");
            ptd_type =
            (Parsetree.RecordTy
-              [{ Parsetree.pfd_name = (1, "key"); pfd_escape = ref (true);
-                 pfd_type = (2, "int") };
-                { Parsetree.pfd_name = (3, "children");
-                  pfd_escape = ref (true); pfd_type = (4, "treelist") }
+              [{ Parsetree.pfd_name = (13, "key"); pfd_escape = ref (true);
+                 pfd_type = (10, "int") };
+                { Parsetree.pfd_name = (14, "children");
+                  pfd_escape = ref (true); pfd_type = (15, "treelist") }
                 ])
            }
           ]);
-      Parsetree.PVarDec {name = (5, "d"); escape = ref (true);
-        type_ = (Some (2, "int")); init = (Parsetree.PIntExp 0)};
+      Parsetree.PVarDec {name = (16, "d"); escape = ref (true);
+        type_ = (Some (10, "int")); init = (Parsetree.PIntExp 0)};
       (Parsetree.PTypeDec
-         [{ Parsetree.ptd_name = (4, "treelist");
+         [{ Parsetree.ptd_name = (15, "treelist");
             ptd_type =
             (Parsetree.RecordTy
-               [{ Parsetree.pfd_name = (6, "hd"); pfd_escape = ref (true);
-                  pfd_type = (0, "tree") };
-                 { Parsetree.pfd_name = (7, "tl"); pfd_escape = ref (true);
-                   pfd_type = (4, "treelist") }
+               [{ Parsetree.pfd_name = (17, "hd"); pfd_escape = ref (true);
+                  pfd_type = (12, "tree") };
+                 { Parsetree.pfd_name = (18, "tl"); pfd_escape = ref (true);
+                   pfd_type = (15, "treelist") }
                  ])
             }
            ])
       ];
-    body = (Parsetree.PVarExp (Parsetree.PSimpleVar (5, "d")))}
+    body = (Parsetree.PVarExp (Parsetree.PSimpleVar (16, "d")))}

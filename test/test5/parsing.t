@@ -6,50 +6,52 @@
   
   /* define a tree */
   type tree ={key: int, children: treelist}
+  
   type treelist = {hd: tree, tl: treelist}
   
-  var lis:intlist := intlist { hd=0, tl= nil } 
+  
+  var lis := intlist { hd=0, tl= nil } 
   
   in
-  	lis
+  	()
   end
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PTypeDec
-        [{ Parsetree.ptd_name = (0, "intlist");
+        [{ Parsetree.ptd_name = (12, "intlist");
            ptd_type =
            (Parsetree.RecordTy
-              [{ Parsetree.pfd_name = (1, "hd"); pfd_escape = ref (true);
-                 pfd_type = (2, "int") };
-                { Parsetree.pfd_name = (3, "tl"); pfd_escape = ref (true);
-                  pfd_type = (0, "intlist") }
+              [{ Parsetree.pfd_name = (13, "hd"); pfd_escape = ref (true);
+                 pfd_type = (10, "int") };
+                { Parsetree.pfd_name = (14, "tl"); pfd_escape = ref (true);
+                  pfd_type = (12, "intlist") }
                 ])
            };
-          { Parsetree.ptd_name = (4, "tree");
+          { Parsetree.ptd_name = (15, "tree");
             ptd_type =
             (Parsetree.RecordTy
-               [{ Parsetree.pfd_name = (5, "key"); pfd_escape = ref (true);
-                  pfd_type = (2, "int") };
-                 { Parsetree.pfd_name = (6, "children");
-                   pfd_escape = ref (true); pfd_type = (7, "treelist") }
+               [{ Parsetree.pfd_name = (16, "key"); pfd_escape = ref (true);
+                  pfd_type = (10, "int") };
+                 { Parsetree.pfd_name = (17, "children");
+                   pfd_escape = ref (true); pfd_type = (18, "treelist") }
                  ])
             };
-          { Parsetree.ptd_name = (7, "treelist");
+          { Parsetree.ptd_name = (18, "treelist");
             ptd_type =
             (Parsetree.RecordTy
-               [{ Parsetree.pfd_name = (1, "hd"); pfd_escape = ref (true);
-                  pfd_type = (4, "tree") };
-                 { Parsetree.pfd_name = (3, "tl"); pfd_escape = ref (true);
-                   pfd_type = (7, "treelist") }
+               [{ Parsetree.pfd_name = (13, "hd"); pfd_escape = ref (true);
+                  pfd_type = (15, "tree") };
+                 { Parsetree.pfd_name = (14, "tl"); pfd_escape = ref (true);
+                   pfd_type = (18, "treelist") }
                  ])
             }
           ]);
-      Parsetree.PVarDec {name = (8, "lis"); escape = ref (true);
-        type_ = (Some (0, "intlist"));
+      Parsetree.PVarDec {name = (19, "lis"); escape = ref (true); type_ = None;
         init =
-        Parsetree.PRecordExp {type_ = (0, "intlist");
+        Parsetree.PRecordExp {type_ = (12, "intlist");
           fields =
-          [((1, "hd"), (Parsetree.PIntExp 0)); ((3, "tl"), Parsetree.PNilExp)]}}
+          [((13, "hd"), (Parsetree.PIntExp 0)); ((14, "tl"), Parsetree.PNilExp)
+            ]}}
       ];
-    body = (Parsetree.PVarExp (Parsetree.PSimpleVar (8, "lis")))}
+    body = (Parsetree.PSeqExp [])}

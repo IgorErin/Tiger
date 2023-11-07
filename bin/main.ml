@@ -25,7 +25,15 @@ let () =
   Parser.of_string code |> Parser.parse |> function
   | Core.Either.First tree ->
       if Config.default.dparsetree then
-        Printf.printf "%s" @@ Tiger.Parsetree.show_exp tree
-  | Core.Either.Second _ ->
-      Printf.printf "Parsing error.";
-      ()
+        Printf.printf "%s" @@ Tiger.Parsetree.show_exp tree;
+
+      if Config.default.dtypedtree then
+        (try
+           Printf.printf "%s" @@ Tiger.Typedtree.show_exp @@ Semant.trans tree
+         with
+        | Tiger.Semant.Error { message; error } ->
+            if message <> "" then Printf.printf "message: %s\n" message;
+            Printf.printf "error: %s" @@ Tiger.Semant.show_error error
+        | e -> raise e)
+        |> ignore
+  | Core.Either.Second _ -> Printf.printf "Parsing error."

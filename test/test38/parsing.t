@@ -5,17 +5,21 @@
   let
   	type a = int
   	type a = string
+  
+  	var a: a := "" 
   in
-  	0
+  	a
   end
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PLetExp {
     decs =
     [(Parsetree.PTypeDec
-        [{ Parsetree.ptd_name = (0, "a");
-           ptd_type = (Parsetree.NameTy (1, "int")) };
-          { Parsetree.ptd_name = (0, "a");
-            ptd_type = (Parsetree.NameTy (2, "string")) }
-          ])
+        [{ Parsetree.ptd_name = (12, "a");
+           ptd_type = (Parsetree.NameTy (10, "int")) };
+          { Parsetree.ptd_name = (12, "a");
+            ptd_type = (Parsetree.NameTy (11, "string")) }
+          ]);
+      Parsetree.PVarDec {name = (12, "a"); escape = ref (true);
+        type_ = (Some (12, "a")); init = (Parsetree.PStringExp "")}
       ];
-    body = (Parsetree.PIntExp 0)}
+    body = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")))}
