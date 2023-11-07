@@ -186,13 +186,14 @@ end
 
 let get_type Typedtree.{ exp_type; _ } = exp_type
 let ( >> ) f g x = f x |> g
-let mk_typed_exp exp_type exp_desc = Typedtree.{ exp_type; exp_desc }
 
 let not_name =
   let open Types in
   function Name _ -> false | _ -> true
 
-type break_count = One | Zero
+let mk_typed_exp exp_type exp_desc =
+  assert (not_name exp_type);
+  Typedtree.{ exp_type; exp_desc }
 
 let sum message fst snd =
   match (fst, snd) with
@@ -520,8 +521,13 @@ and transDec env = function
       let ty_of_symbol s =
         Symbol.look env.types s
         |> Core.Option.value_or_thunk ~default:(fun () -> Error.unbound_type s)
+        |> Types.actual_type
       in
-      let type_of_result = function Some t -> ty_of_symbol t | None -> Unit in
+      let type_of_result x =
+        x |> function
+        | Some t -> ty_of_symbol t
+        | None -> Unit |> Types.actual_type
+      in
       let type_of_parm x = ty_of_symbol x.Parsetree.pfd_type in
       let funs =
         List.fold_left
@@ -578,6 +584,6 @@ and transTy env t =
   in
   run t
 
-let trans pexp = 
-  break_cheak pexp; 
-  transExp Env.base_env
+let trans pexp =
+  break_cheak pexp;
+  transExp Env.base_env pexp
