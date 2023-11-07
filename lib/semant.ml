@@ -8,6 +8,7 @@ type error =
   | Not_a_array of Types.t
   | Type_mismatch
   | Umbiguos
+  | Unclosed_break
 
 exception Error of { error : error; message : string }
 
@@ -18,9 +19,11 @@ let show_error = function
   | Not_a_array type_ -> Printf.sprintf "not a record: %s" @@ Types.show type_
   | Type_mismatch -> "Type mismatch"
   | Umbiguos -> "Umbiguos"
+  | Unclosed_break -> "unclosed_break"
 
 module Error = struct
   let rais_error message error = raise @@ Error { error; message }
+  let break m = rais_error m Umbiguos
 
   let undef_fun_call sname =
     let name = Symbol.name sname in
@@ -188,6 +191,84 @@ let mk_typed_exp exp_type exp_desc = Typedtree.{ exp_type; exp_desc }
 let not_name =
   let open Types in
   function Name _ -> false | _ -> true
+
+type break_count = One | Zero
+
+let sum message fst snd =
+  match (fst, snd) with
+  | true, false | false, true -> true
+  | true, true -> failwith message
+  | false, false -> false
+
+let break_cheak exp =
+  let open Parsetree in
+  let sname = Symbol.name in
+  let rec no_break m exp = if run exp = false then () else Error.break m
+  and run = function
+    | PVarExp var ->
+        let () = run_var var in
+        false
+    | PNilExp | PIntExp _ | PStringExp _ -> false
+    | PCallExp { args; func } ->
+        let m = Printf.sprintf "in arguments of %s fun call" @@ sname func in
+        let () = List.iter (no_break m) args in
+        false
+    | POpExp { left; oper = _; right } ->
+        let fst = run left in
+        let snd = run right in
+        fst || snd
+    | PSeqExp ls ->
+        let message = "more than one break in seq experssion" in
+        let count =
+          List.fold_left (fun acc exp -> sum message acc @@ run exp) false ls
+        in
+        count
+    | PAssignExp { exp; var = _ } -> run exp
+    | PIfExp { test; then_; else_ } ->
+        let test = run test in
+        let then_ = run then_ in
+        let else_ = Core.Option.value ~default:false @@ Option.map run else_ in
+        else_ || then_ || test
+    | PWhileExp { test; body } ->
+        let _ = run body in
+        run test
+    | PForExp { lb; hb; body; _ } ->
+        let _ = run body in
+        run lb || run hb
+    | PBreakExp -> true
+    | PLetExp { decs; body } ->
+        List.iter run_dec decs;
+        run body
+    | PArrayExp { size; init; _ } -> run init || run size
+    | PRecordExp { fields; _ } ->
+        List.fold_left
+          (fun acc (name, exp) ->
+            let m =
+              Printf.sprintf "unreachable break in init of field %s"
+              @@ sname name
+            in
+            sum m acc @@ run exp)
+          false fields
+  and run_dec = function
+    | PFunctionDec ls ->
+        List.iter
+          (fun { pfun_body; pfun_name; _ } ->
+            let m = Printf.sprintf "in dec of %s" @@ sname pfun_name in
+            no_break m pfun_body)
+          ls
+    | PVarDec { init; name; _ } ->
+        let m = Printf.sprintf "in dec of %s" @@ sname name in
+        no_break m init
+    | PTypeDec _ -> ()
+  and run_var = function
+    | PSimpleVar _ -> ()
+    | PFieldVar (var, _) -> run_var var
+    | PSubscriptVar (var, exp) ->
+        let m = Printf.sprintf "in subscript of %s" @@ show_var var in
+        no_break m exp;
+        run_var var
+  in
+  no_break "in expression" exp
 
 let rec transExp (env : env) exp =
   let open Typedtree in
@@ -497,4 +578,6 @@ and transTy env t =
   in
   run t
 
-let trans = transExp Env.base_env
+let trans pexp = 
+  break_cheak pexp; 
+  transExp Env.base_env

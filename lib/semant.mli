@@ -7,6 +7,7 @@ type error =
   | Not_a_array of Types.t
   | Type_mismatch
   | Umbiguos
+  | Unclosed_break
 
 val show_error : error -> string
 
