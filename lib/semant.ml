@@ -182,6 +182,44 @@ module Check = struct
         let names = List.map Symbol.name list |> String.concat " " in
         let m = Printf.sprintf "Umbiguous record fields: %s" names in
         Error.umbiguos m
+
+  let type_cycl source =
+    let open Types in
+    let rec loop = function
+      | Name (name, toptr) -> (
+          match !toptr with
+          | Some x ->
+              if Base.phys_equal x source then
+                let m =
+                  Printf.sprintf "Cycl type %s name" @@ Symbol.name name
+                in
+                Error.umbiguos m
+              else loop x
+          | None -> Error.unbound_type ~m:"Mutual rec type unset." name)
+      | _ -> ()
+    in
+    loop source
+
+  let mutual_fun_names ls =
+    ls
+    |> List.map (fun { pfun_name; _ } -> pfun_name)
+    |> Core.List.find_all_dups ~compare:Symbol.compare
+    |> function
+    | [] -> ()
+    | hd :: _ ->
+        let m =
+          Printf.sprintf "Same name in mutual fun def: %s" @@ Symbol.name hd
+        in
+        Error.umbiguos m
+
+  let mutual_type_names names =
+    names |> Core.List.find_all_dups ~compare:Symbol.compare |> function
+    | [] -> ()
+    | hd :: _ ->
+        let m =
+          Printf.sprintf "Same name in mutual type def: %s" @@ Symbol.name hd
+        in
+        Error.umbiguos m
 end
 
 let get_type Typedtree.{ exp_type; _ } = exp_type
@@ -381,9 +419,7 @@ let rec transExp (env : env) exp =
         in
         let texp = TForExp { var; escape; lb; hb; body } in
         mk_typed_exp Types.Unit texp
-    | PBreakExp ->
-        (* TODO check that in for or while *)
-        mk_typed_exp Types.Unit TBreakExp
+    | PBreakExp -> mk_typed_exp Types.Unit TBreakExp
     | PLetExp { decs; body } ->
         let decs, env =
           List.fold_left
@@ -486,6 +522,7 @@ and transDec env = function
       let open Types in
       let add env name t = Symbol.enter env name t in
       let names = List.map (fun { ptd_name; _ } -> ptd_name) ls in
+      let () = Check.mutual_type_names names in
       let types =
         List.fold_left
           (fun env tname ->
@@ -514,6 +551,9 @@ and transDec env = function
             Error.type_mismatch m
       in
       let decs = ls |> List.map set_type in
+      let () =
+        List.iter (fun Typedtree.{ td_type; _ } -> Check.type_cycl td_type) decs
+      in
       let desc = Typedtree.TTypeDec decs in
       (desc, { env with types })
   | PFunctionDec ls ->
@@ -524,11 +564,12 @@ and transDec env = function
         |> Types.actual_type
       in
       let type_of_result x =
-        x |> function
-        | Some t -> ty_of_symbol t
-        | None -> Unit |> Types.actual_type
+        x
+        |> (function Some t -> ty_of_symbol t | None -> Unit)
+        |> Types.actual_type
       in
       let type_of_parm x = ty_of_symbol x.Parsetree.pfd_type in
+      let () = Check.mutual_fun_names ls in
       let funs =
         List.fold_left
           (fun funs { pfun_name; pfun_params; pfun_result; _ } ->

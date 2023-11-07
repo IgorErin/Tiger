@@ -65,6 +65,7 @@ let actual_type t =
   loop t
 
 let equal fst snd =
+  (* if type is cycle actual_type goes to infinet loop *)
   match (actual_type fst, actual_type snd) with
   | Int, Int | String, String | Nil, Nil | Unit, Unit -> true
   | Record (_, fst), Record (_, snd) | Array (_, fst), Array (_, snd) ->

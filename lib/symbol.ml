@@ -18,6 +18,7 @@ let symbol name =
 
 let name (_, name) = name
 let equal (fn, fs) (sn, ss) = Int.equal fn sn && String.equal fs ss
+let compare fst snd = if equal fst snd then 0 else 1
 
 (* map int -> 'a *)
 

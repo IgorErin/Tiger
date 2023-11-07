@@ -9,37 +9,5 @@
   	0
   end
   $ Tiger -dtypedtree ./code.tig 
-  { Typedtree.exp_desc =
-    Typedtree.TLetExp {
-      decs =
-      [(Typedtree.TFunctionDec
-          [{ Typedtree.fun_name = (12, "g");
-             fun_params =
-             [{ Typedtree.fd_name = (13, "a"); fd_escape = ref (true);
-                fd_type = int }
-               ];
-             fun_result = int;
-             fun_body =
-             { Typedtree.exp_desc =
-               (Typedtree.TVarExp
-                  { Typedtree.var_desc = (Typedtree.TSimpleVar (13, "a"));
-                    var_type = int });
-               exp_type = int }
-             };
-            { Typedtree.fun_name = (12, "g");
-              fun_params =
-              [{ Typedtree.fd_name = (13, "a"); fd_escape = ref (true);
-                 fd_type = int }
-                ];
-              fun_result = int;
-              fun_body =
-              { Typedtree.exp_desc =
-                (Typedtree.TVarExp
-                   { Typedtree.var_desc = (Typedtree.TSimpleVar (13, "a"));
-                     var_type = int });
-                exp_type = int }
-              }
-            ])
-        ];
-      body = { Typedtree.exp_desc = (Typedtree.TIntExp 0); exp_type = int }};
-    exp_type = int }
+  message: Same name in mutual fun def: g
+  error: Umbiguos
