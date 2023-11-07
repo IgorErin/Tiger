@@ -11,6 +11,14 @@ type error =
 
 exception Error of { error : error; message : string }
 
+let show_error = function
+  | Unbound_name name -> Printf.sprintf "unbound name: %s" name
+  | Unbound_type type_ -> Printf.sprintf "unbound type: %s" type_
+  | Not_a_record type_ -> Printf.sprintf "not a record: %s" @@ Types.show type_
+  | Not_a_array type_ -> Printf.sprintf "not a record: %s" @@ Types.show type_
+  | Type_mismatch -> "Type mismatch"
+  | Umbiguos -> "Umbiguos"
+
 module Error = struct
   let rais_error message error = raise @@ Error { error; message }
 
@@ -41,24 +49,64 @@ module Error = struct
 end
 
 module Check = struct
-  let int = function Types.Int -> () | _ -> failwith "Type msut be Int"
-  let unit = function Types.Unit -> () | _ -> failwith "Type must be Unit"
+  let int = function
+    | Types.Int -> ()
+    | _ -> Error.type_mismatch "Type msut be Int"
+
+  let unit = function
+    | Types.Unit -> ()
+    | _ -> Error.type_mismatch "Type must be Unit"
 
   let string = function
     | Types.String -> ()
-    | _ -> failwith "Type myst be String"
+    | _ -> Error.type_mismatch "must be string"
 
   let string_op = function
-    | PlusOp -> Types.Int
+    | PlusOp -> Types.String
     | GeOp | GtOp | LeOp | LtOp | EqOp -> Types.Int
-    | _ -> failwith "Unsupported op on string"
+    | _ -> Error.type_mismatch "must be string op string"
 
-  let int_op = function _ -> Types.Int
+  module Op = struct
+    let eq =
+      let open Types in
+      function
+      | Int | String | Record _ | Array _ | Unit -> Int
+      | t ->
+          let message = Printf.sprintf "equlity on %s" @@ Types.show t in
+          Error.type_mismatch message
 
-  let int_or_string_pair_tr = function
-    | Types.String, Types.String -> Types.String
-    | Types.Int, Types.Int -> Types.Int
-    | _ -> failwith "Type pair of Int or String expected."
+    let compare =
+      let open Types in
+      function
+      | Int | String -> Int
+      | t ->
+          let message = Printf.sprintf "compare on %s" @@ Types.show t in
+          Error.type_mismatch ""
+
+    let plus =
+      let open Types in
+      function
+      | Int -> Int
+      | String -> String
+      | t ->
+          let message = Printf.sprintf "equlity on %s" @@ Types.show t in
+          Error.type_mismatch ""
+
+    let arithmetic =
+      let open Types in
+      function
+      | Int -> Int
+      | t ->
+          let message = Printf.sprintf "equlity on %s" @@ Types.show t in
+          Error.type_mismatch ""
+
+    let infer op type_ =
+      match op with
+      | EqOp | NeqOp -> eq type_
+      | LtOp | LeOp | GtOp | GeOp -> compare type_
+      | PlusOp -> plus type_
+      | MinusOp | TimesOp | DivideOp -> arithmetic type_
+  end
 
   let int_tr t =
     int t;
@@ -77,7 +125,8 @@ module Check = struct
         else
           let fst = Types.show fst in
           let snd = Types.show snd in
-          failwith @@ Printf.sprintf "Types must be equal %s =/= %s" fst snd
+          Error.type_mismatch
+          @@ Printf.sprintf "Types must be equal %s =/= %s" fst snd
 
   let equal fst snd =
     let (_ : Types.t) = infer_type fst snd in
@@ -89,9 +138,12 @@ module Check = struct
     fst
 
   let get_unique () = ref ()
-  let sy_equal fst snd ~m = if Symbol.equal fst snd then () else failwith m
+
+  let sy_equal fst snd ~m =
+    if Symbol.equal fst snd then () else Error.umbiguos m
 
   let get_field_type type_ field_name =
+    let type_ = Types.actual_type type_ in
     match type_ with
     | Types.Record (ls, _) -> (
         let sameSymbol =
@@ -101,7 +153,7 @@ module Check = struct
         | None ->
             let m = Printf.sprintf "No such fiedl in %s" @@ Types.show type_ in
             Error.unbound_name ~m field_name
-        | Some (_, t) -> t)
+        | Some (_, t) -> t |> Types.actual_type)
     | actual ->
         let field_name = Symbol.name field_name in
         let type_ = Types.show type_ in
@@ -115,7 +167,7 @@ module Check = struct
 
   let not_nil_tr =
     let open Types in
-    function Nil -> failwith "Nil type unexpected" | x -> x
+    function Nil -> Error.type_mismatch "Nil unexpected" | x -> x
 
   let record_fields_umbiguous fieds =
     fieds |> List.map fst
@@ -133,6 +185,10 @@ let get_type Typedtree.{ exp_type; _ } = exp_type
 let ( >> ) f g x = f x |> g
 let mk_typed_exp exp_type exp_desc = Typedtree.{ exp_type; exp_desc }
 
+let not_name =
+  let open Types in
+  function Name _ -> false | _ -> true
+
 let rec transExp (env : env) exp =
   let open Typedtree in
   let rec trexp pexp =
@@ -140,6 +196,9 @@ let rec transExp (env : env) exp =
     | PVarExp v ->
         let var = trvar env.vars v in
         let exp_type = var.var_type in
+
+        assert (not_name exp_type);
+
         mk_typed_exp exp_type @@ TVarExp var
     | PNilExp -> mk_typed_exp Types.Nil TNilExp
     | PIntExp v -> mk_typed_exp Types.Int @@ TIntExp v
@@ -149,24 +208,32 @@ let rec transExp (env : env) exp =
         | Some func_sig ->
             let args = List.map trexp args in
             let () =
-              List.map get_type args |> List.iter2 Check.equal func_sig.formals
+              let par = List.length func_sig.formals in
+              let arg = List.length args in
+              if par = arg then
+                List.map get_type args
+                |> List.iter2 Check.equal func_sig.formals
+              else
+                let fname = Symbol.name func in
+                let m =
+                  Printf.sprintf "Call of %s, parameters = %d, arguemnts = %d"
+                    fname par arg
+                in
+                Error.type_mismatch m
             in
             let exp = TCallExp { func; args } in
+
+            assert (not_name func_sig.result);
+
             mk_typed_exp func_sig.result exp
         | None -> Error.undef_fun_call func)
-    | POpExp { left; oper; right } -> (
+    | POpExp { left; oper; right } ->
         let left = trexp left in
         let right = trexp right in
-        match (get_type left, get_type right) with
-        | Types.Int, Types.Int ->
-            let result = Check.int_op oper in
-            let texp = TOpExp { left; oper; right } in
-            mk_typed_exp result texp
-        | Types.String, Types.String ->
-            let result = Check.string_op oper in
-            let texp = TOpExp { left; oper; right } in
-            mk_typed_exp result texp
-        | left, right -> Error.bin_op left oper right)
+        let common_type = Check.infer_type (get_type left) (get_type right) in
+        let type_ = Check.Op.infer oper common_type in
+        let desc = TOpExp { left; oper; right } in
+        mk_typed_exp type_ desc
     | PSeqExp ls -> (
         List.rev ls |> function
         | [] -> mk_typed_exp Types.Unit @@ TSeqExp []
@@ -175,6 +242,9 @@ let rec transExp (env : env) exp =
             let tl = List.map trexp tl in
             let hd = trexp hd in
             let texp = TSeqExp (hd :: tl) in
+
+            assert (not_name @@ get_type hd);
+
             mk_typed_exp (get_type hd) texp)
     | PAssignExp { var; exp } ->
         let exp = trexp exp in
@@ -191,6 +261,10 @@ let rec transExp (env : env) exp =
           let () = test |> get_type |> Check.int in
           Check.equal (get_type then_) (get_type else_)
         in
+        let result_type = Check.infer_type (get_type then_) (get_type else_) in
+
+        assert (not_name result_type);
+
         let texp = TIfExp { test; then_; else_ = Some else_ } in
         mk_typed_exp (get_type then_) texp
     | PIfExp { test; then_; else_ = None } ->
@@ -201,7 +275,7 @@ let rec transExp (env : env) exp =
           then_ |> get_type |> Check.unit
         in
         let texp = TIfExp { test; then_; else_ = None } in
-        mk_typed_exp (get_type then_) texp
+        mk_typed_exp Types.Unit texp
     | PWhileExp { test; body } ->
         let test = trexp test in
         let body = trexp body in
@@ -240,10 +314,13 @@ let rec transExp (env : env) exp =
         let decs = List.rev decs in
         let body = transExp env body in
         let texp = Typedtree.TLetExp { decs; body } in
+
+        assert (not_name body.exp_type);
+
         mk_typed_exp body.exp_type texp
     | PArrayExp { type_; size; init } -> (
         let source_type_name = Symbol.name type_ in
-        Symbol.look env.types type_ |> function
+        Symbol.look env.types type_ |> Option.map Types.actual_type |> function
         | Some (Types.Array (mem_type, _) as type_) ->
             let size = trexp size in
             let init = trexp init in
@@ -256,7 +333,7 @@ let rec transExp (env : env) exp =
         | Some t -> Error.not_a_array t
         | None -> Error.unbound_type ~m:"Array type not found" type_)
     | PRecordExp { type_; fields } -> (
-        Symbol.look env.types type_ |> function
+        Symbol.look env.types type_ |> Option.map Types.actual_type |> function
         | Some (Types.Record (ls, _) as type_) ->
             let fields =
               List.map2
@@ -278,20 +355,22 @@ let rec transExp (env : env) exp =
     let trvar = trvar venv in
     match v with
     | PSimpleVar s as var -> (
-        Symbol.look venv s |> function
+        Symbol.look venv s |> Option.map Types.actual_type |> function
         | Some var_type -> { var_type; var_desc = TSimpleVar s }
         | None -> Error.unbound_name s)
     | PFieldVar (v, f) ->
         let v = trvar v in
         let ft = Check.get_field_type v.var_type f in
-        let var_type = ft in
+        let var_type = ft |> Types.actual_type in
         let var_desc = TFieldVar (v, f) in
         { var_desc; var_type }
     | PSubscriptVar (v, e) ->
         let texp = trexp e in
         let () = texp |> get_type |> Check.int in
         let v = trvar v in
-        let var_type = Check.get_array_item_type v.var_type in
+        let var_type =
+          Check.get_array_item_type @@ Types.actual_type v.var_type
+        in
         let var_desc = TSubscriptVar (v, texp) in
         { var_type; var_desc }
   in
@@ -400,21 +479,21 @@ and transDec env = function
       (desc, { env with funs })
 
 and transTy env t =
-  let get_type env s =
+  let get_type s =
     Symbol.look env.types s
     |> Core.Option.value_or_thunk ~default:(fun () -> Error.unbound_type s)
   in
   let run = function
-    | NameTy n -> get_type env n
+    | NameTy n -> get_type n
     | RecordTy fl ->
         let fl =
           List.map
-            (fun { pfd_name; pfd_type; _ } -> (pfd_name, get_type env pfd_type))
+            (fun { pfd_name; pfd_type; _ } -> (pfd_name, get_type pfd_type))
             fl
         in
         Check.record_fields_umbiguous fl;
         Types.Record (fl, Check.get_unique ())
-    | ArrayTy s -> Array (get_type env s, Check.get_unique ())
+    | ArrayTy s -> Array (get_type s, Check.get_unique ())
   in
   run t
 
