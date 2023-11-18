@@ -6,7 +6,17 @@
 (library
  (name Tiger)
  (public_name Tiger)
- (modules typedtree parsetree symbol parser types env semant translate)
+ (modules
+  temp
+  frame
+  typedtree
+  parsetree
+  symbol
+  parser
+  types
+  env
+  semant
+  translate)
  (libraries core angstrom)
  (preprocess
   (pps ppx_deriving.show)))

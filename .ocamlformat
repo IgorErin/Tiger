@@ -1,2 +1,4 @@
-profile = default
-version = 0.26.0
+profile=janestreet
+sequence-style = terminator
+field-space=loose
+max-indent=2

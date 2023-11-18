@@ -11,7 +11,11 @@ type error =
 
 val show_error : error -> string
 
-exception Error of { error : error; message : string }
+exception
+  Error of
+    { error : error
+    ; message : string
+    }
 
 val transExp : env -> Parsetree.exp -> Typedtree.exp
 val transDec : env -> Parsetree.dec -> Typedtree.dec * env

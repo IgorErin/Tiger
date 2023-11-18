@@ -1,8 +1,8 @@
-type config = {
-  mutable path : string option;
-  mutable dparsetree : bool;
-  mutable dtypedtree : bool;
-}
+type config =
+  { mutable path : string option
+  ; mutable dparsetree : bool
+  ; mutable dtypedtree : bool
+  }
 
 let default = { path = None; dparsetree = false; dtypedtree = false }
 let set_path path = default.path <- Some path
@@ -13,6 +13,7 @@ let get_path () =
   match default.path with
   | Some path -> path
   | None -> failwith "Path not specifyed"
+;;
 
 let is_dparsetree () = default.dparsetree
 let is_dtypedtree () = default.dtypedtree

@@ -14,7 +14,8 @@ let symbol name =
     result
   in
   let result = Hashtbl.find_or_add hashtbl name ~default in
-  (result, name)
+  result, name
+;;
 
 let name (_, name) = name
 let equal (fn, fs) (sn, ss) = Int.equal fn sn && String.equal fs ss
