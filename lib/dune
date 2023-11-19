@@ -16,7 +16,9 @@
   types
   env
   semant
-  translate)
+  typing
+  translate
+  ir)
  (libraries core angstrom)
  (preprocess
   (pps ppx_deriving.show)))
