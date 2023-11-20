@@ -1,10 +1,38 @@
-type t = unit
 type access = InFrame of int
 
-let new_frame ~name ~formals =
-  let () = ignore name in
-  let () = ignore formals in
-  ()
+type t =
+  { label : Temp.label
+  ; formals : access list
+  ; mutable locals_count : int
+  }
+
+let inc_locals frame = { frame with locals_count = frame.locals_count + 1 }
+
+let alloc_local ~frame =
+  let result = InFrame (-frame.locals_count) in
+  frame.locals_count <- frame.locals_count - 1;
+  result
 ;;
 
-let alloc_local _ = InFrame 0
+let name { label; _ } = label
+
+let new_frame ~label ~formals =
+  (* all in stack *)
+  let f = { label; formals = []; locals_count = 0 } in
+  List.iter
+    (fun _ ->
+      let _ = alloc_local ~frame:f in
+      ())
+    formals;
+  f
+;;
+
+let formals { formals; _ } = formals
+let fp = Temp.new_temp ()
+let word_size = 32 (* for now *)
+
+let exp (InFrame offset) e =
+  (* todo check what is e mb?*)
+  let open Ir in
+  mem @@ binop e Plus @@ const offset
+;;

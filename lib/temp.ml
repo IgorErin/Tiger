@@ -11,8 +11,8 @@ let new_tempn name =
   temp
 ;;
 
-let new_temp () = new_tempn "temp"
-let temp_to_string (name, number) = Printf.sprintf "%s_%d" name number
+let new_temp () = new_tempn "T"
+let temp_to_string (name, number) = Printf.sprintf "%s%d" name number
 
 let new_labeln name =
   let lable = name, !lable_count in
@@ -20,5 +20,5 @@ let new_labeln name =
   lable
 ;;
 
-let new_lable () = new_labeln "lable"
-let lable_to_string (name, number) = Printf.sprintf "%s_%d" name number
+let new_label () = new_labeln "L"
+let label_to_string (name, number) = Printf.sprintf "%s_%d" name number
