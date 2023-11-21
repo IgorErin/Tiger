@@ -170,12 +170,16 @@ module Check = struct
     let type_ = Types.actual_type type_ in
     match type_ with
     | Types.Record (ls, _) ->
-      let sameSymbol = List.find_opt (fun x -> x |> fst |> Symbol.equal field_name) ls in
+      let sameSymbol =
+        ls
+        |> List.mapi (fun index value -> index, value)
+        |> List.find_opt (fun (_, (s, _)) -> Symbol.equal s field_name)
+      in
       (match sameSymbol with
+       | Some (index, (_, t)) -> index, t |> Types.actual_type
        | None ->
          let m = Printf.sprintf "No such fiedl in %s" @@ Types.show type_ in
-         Error.unbound_name ~m field_name
-       | Some (_, t) -> t |> Types.actual_type)
+         Error.unbound_name ~m field_name)
     | actual ->
       let field_name = Symbol.name field_name in
       let type_ = Types.show type_ in
@@ -502,9 +506,9 @@ let rec transExp (env : env) exp =
       | None -> Error.unbound_name s)
     | PFieldVar (v, f) ->
       let v = trvar v in
-      let ft = Check.get_field_type v.var_type f in
+      let index, ft = Check.get_field_type v.var_type f in
       let var_type = ft |> Types.actual_type in
-      let var_desc = TFieldVar (v, f) in
+      let var_desc = TFieldVar (v, index) in
       { var_desc; var_type }
     | PSubscriptVar (v, e) ->
       let texp = trexp e in

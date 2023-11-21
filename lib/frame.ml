@@ -32,7 +32,6 @@ let fp = Temp.new_temp ()
 let word_size = 32 (* for now *)
 
 let exp (InFrame offset) e =
-  (* todo check what is e mb?*)
   let open Ir in
   mem @@ binop e Plus @@ const offset
 ;;

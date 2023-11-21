@@ -41,6 +41,7 @@ and relop =
 
 let false_ = Const 0
 let true_ = Const 1
+let null = Const 0
 let exp e = Exp e
 let const c = Const c
 let eseq s e = Eseq (s, e)
@@ -51,6 +52,10 @@ let move fst snd = Move (fst, snd)
 let cjump cmp fst snd t f = CJump (cmp, fst, snd, t, f)
 let binop fst op snd = BinOp (op, fst, snd)
 let mem e = Mem e
+
+(*TODO*)
+let call_out_of_bound = Call (false_, [])
+let call_null_reference = Call (false_, [])
 
 let seq ls =
   let ls = List.rev ls in

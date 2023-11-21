@@ -1,6 +1,6 @@
 type var_desc =
   | TSimpleVar of Symbol.t
-  | TFieldVar of var * Symbol.t
+  | TFieldVar of var * int
   | TSubscriptVar of var * exp
 [@@deriving show]
 

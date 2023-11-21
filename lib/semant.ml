@@ -10,6 +10,20 @@ module Env = struct
 
   let addf ctx symbol level = { ctx with fenv = Symbol.enter ctx.fenv symbol level }
   let addv ctx symbol access = { ctx with venv = Symbol.enter ctx.venv symbol access }
+
+  let vlook ctx symbol =
+    Symbol.look ctx.venv symbol
+    |> Core.Option.value_or_thunk ~default:(fun () ->
+      failwith @@ Printf.sprintf "Not found access for var %s" @@ Symbol.name symbol)
+  ;;
+
+  let flook ctx symbol =
+    Symbol.look ctx.fenv symbol
+    |> Core.Option.value_or_thunk ~default:(fun () ->
+      failwith @@ Printf.sprintf "Not found access for fun %s" @@ Symbol.name symbol)
+  ;;
+
+  let level ctx = ctx.level
 end
 
 open Env
@@ -82,6 +96,20 @@ let exp =
       let access = Translate.alloc_local ctx.level in
       Env.addv ctx name access
     | TTypeDec _ -> ctx
+  and run_var ctx var =
+    let type_ = var.var_type in
+    match var.var_desc with
+    | TSimpleVar var ->
+      let access = Env.vlook ctx var in
+      let level = Env.level ctx in
+      Translate.simple_var ~access ~level
+    | TFieldVar (var, number) ->
+      let var = run_var ctx var |> Translate.Exp.to_exp |> Translate.null_check in
+      Translate.field_var ~var ~number
+    | TSubscriptVar (var, exp) ->
+      let exp = run_exp ctx exp in
+      let var = run_var ctx var |> Translate.Exp.to_exp |> Translate.null_check in
+      Translate.subscript_var ~var_exp:var ~index_exp:exp
   in
   ()
 ;;
