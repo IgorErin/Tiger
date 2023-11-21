@@ -8,3 +8,4 @@ val formals : t -> access list
 val fp : Temp.temp
 val word_size : int
 val exp : access -> Ir.exp -> Ir.exp
+val call_external : name:string -> args:Ir.exp list -> Ir.exp

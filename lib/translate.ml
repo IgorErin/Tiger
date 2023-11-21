@@ -148,6 +148,13 @@ module Common = struct
     | `GtOp -> GT
     | `GeOp -> GE
   ;;
+
+  let malloc count =
+    (* TODO correct malloc call*)
+    Ir.(Frame.call_external ~name:"malloc" ~args:[ const count ])
+  ;;
+
+  let is_true ~value ~t ~f = Ir.(cjump EQ value true_ t f)
 end
 
 let null_check value =
@@ -217,22 +224,105 @@ module Array = struct
     let result = get ~array_exp ~index_exp in
     bound_check ~index:index_exp ~length ~result
   ;;
+
+  let alloc ~value ~length =
+    Frame.call_external ~name:"init_array" ~args:[ value; length ]
+  ;;
 end
 
 let subscript_var ~var_exp ~index_exp =
+  let index_exp = index_exp |> Exp.to_exp in
   Array.get_checked ~array_exp:var_exp ~index_exp |> Exp.ex
 ;;
 
 let nill = Ir.null |> Exp.ex
 let int c = c |> Ir.const |> Exp.ex
+let assign ~name ~exp = Ir.move name exp |> Exp.nx
+let unit = Ir.unit |> Ir.exp
 
-let op_aritm ~left ~oper ~right =
-  let oper = Common.map_arithm oper in
-  Ir.binop left oper right |> Exp.ex
+let seq seq =
+  seq
+  |> Core.List.reduce ~f:(fun acc next -> Ir.(eseq (exp acc) @@ next))
+  |> Option.value ~default:Ir.unit
+  |> Exp.ex
 ;;
 
-let op_rel ~left ~oper ~right =
-  let oper = Common.map_rel oper in
-  let result t f = Ir.(cjump oper left right t f) in
-  Exp.cx result
+let if_else ~test ~then_ ~else_ =
+  let t = Temp.new_label () in
+  let f = Temp.new_label () in
+  let result = Ir.name @@ Temp.new_temp () in
+  Ir.(
+    eseq (seq [ move result then_; test t f; label f; move result else_; label t ]) result)
+  |> Exp.ex
 ;;
+
+let if_ ~test ~then_ =
+  let test = Exp.to_jump test in
+  let then_ = Exp.to_stm then_ in
+  let t = Temp.new_label () in
+  let f = Temp.new_label () in
+  Ir.(seq [ test t f; label t; then_; label f ]) |> Exp.nx
+;;
+
+module String = struct
+  let const str =
+    let label = Temp.new_label () in
+    (str, label), Exp.ex @@ Ir.name label
+  ;;
+end
+
+module Int = struct
+  let op_aritm ~left ~oper ~right =
+    let oper = Common.map_arithm oper in
+    Ir.binop left oper right |> Exp.ex
+  ;;
+
+  let op_rel ~left ~oper ~right =
+    let oper = Common.map_rel oper in
+    let result t f = Ir.(cjump oper left right t f) in
+    Exp.cx result
+  ;;
+end
+
+module Record = struct
+  let alloc values =
+    let length = List.length values in
+    let t = Ir.temp @@ Temp.new_temp () in
+    let source = Ir.(move t @@ Common.malloc length) in
+    let values = List.mapi (fun index value -> index, value |> Exp.to_exp) values in
+    List.fold_left
+      (fun acc (count, value) ->
+        let current =
+          let offset = Common.offset_of_int ~number:count in
+          let target = Common.offset ~source:t ~offset in
+          Ir.(move target value)
+        in
+        Ir.(seq [ acc; current ]))
+      source
+      values
+    |> Exp.nx
+  ;;
+end
+
+let break ~l = Ir.(jump ~e:(name l) ~ls:[ l ]) |> Exp.nx
+
+let while_ ~test ~body =
+  let test = Exp.to_exp test in 
+  let body = Exp.to_stm body in 
+  let module C = Common in
+  let sl = Temp.new_label () in
+  let bl = Temp.new_label () in
+  let dl = Temp.new_label () in
+  Ir.(
+    seq
+      [ label sl
+      ; C.is_true ~value:test ~t:bl ~f:dl
+      ; label bl
+      ; body
+      ; jump ~e:(name sl) ~ls:[ sl ]
+      ; label dl
+      ])
+    |> Exp.nx
+;;
+
+let for_test = 

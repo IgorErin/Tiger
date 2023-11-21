@@ -9,6 +9,16 @@ type t =
   | Unit
   | Name of Symbol.t * t option ref
 
+let is_unit = function
+  | Unit -> true
+  | _ -> false
+;;
+
+let is_string = function
+  | String -> true
+  | _ -> false
+;;
+
 let rec show =
   let open Base in
   function

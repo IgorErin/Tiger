@@ -35,3 +35,10 @@ let exp (InFrame offset) e =
   let open Ir in
   mem @@ binop e Plus @@ const offset
 ;;
+
+let create_name name = Temp.new_labeln name
+
+let call_external ~name ~args =
+  let fname = create_name name in
+  Ir.(call (name fname) args)
+;;

@@ -365,10 +365,8 @@ let rec transExp (env : env) exp =
           then List.map get_type args |> List.iter2 Check.equal func_sig.formals
           else (
             let fname = Symbol.name func in
-            let m =
-              Printf.sprintf "Call of %s, parameters = %d, arguemnts = %d" fname par arg
-            in
-            Error.type_mismatch m)
+            Printf.sprintf "Call of %s, parameters = %d, arguemnts = %d" fname par arg
+            |> Error.type_mismatch)
         in
         let exp = TCallExp { func; args } in
         assert (not_name func_sig.result);
