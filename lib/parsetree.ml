@@ -1,3 +1,27 @@
+type arithm =
+  [ `PlusOp
+  | `MinusOp
+  | `TimesOp
+  | `DivideOp
+  ]
+[@@deriving show]
+
+and relational =
+  [ `EqOp
+  | `NeqOp
+  | `LtOp
+  | `LeOp
+  | `GtOp
+  | `GeOp
+  ]
+[@@deriving show]
+
+type oper =
+  [ arithm
+  | relational
+  ]
+[@@deriving show]
+
 type var =
   | PSimpleVar of Symbol.t
   | PFieldVar of var * Symbol.t
@@ -53,18 +77,6 @@ and exp =
       { type_ : Symbol.t
       ; fields : (Symbol.t * exp) list
       }
-
-and oper =
-  | PlusOp
-  | MinusOp
-  | TimesOp
-  | DivideOp
-  | EqOp
-  | NeqOp
-  | LtOp
-  | LeOp
-  | GtOp
-  | GeOp
 
 and dec =
   | PFunctionDec of fundec list

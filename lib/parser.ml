@@ -219,7 +219,7 @@ let exp =
       >>= fun in_exp -> _end >>| fun _ -> PLetExp { decs = dec_list; body = in_exp }
     in
     let unar_minus =
-      char '-' *> exp >>| fun x -> POpExp { left = PIntExp 0; oper = MinusOp; right = x }
+      char '-' *> exp >>| fun x -> POpExp { left = PIntExp 0; oper = `MinusOp; right = x }
     in
     let non_op =
       ws
@@ -265,16 +265,16 @@ let exp =
         fold <$> many (inner *> p)
       in
       let create_inner s = ws *> string s *> ws *> return () in
-      create (create_inner "*") TimesOp non_op
-      |> create (create_inner "/") DivideOp
-      |> create (create_inner "+") PlusOp
-      |> create (create_inner "-") MinusOp
-      |> create (create_inner "=") EqOp
-      |> create (create_inner "<>") NeqOp
-      |> create (create_inner ">") GtOp
-      |> create (create_inner "<") LtOp
-      |> create (create_inner ">=") GeOp
-      |> create (create_inner "<=") LeOp
+      create (create_inner "*") `TimesOp non_op
+      |> create (create_inner "/") `DivideOp
+      |> create (create_inner "+") `PlusOp
+      |> create (create_inner "-") `MinusOp
+      |> create (create_inner "=") `EqOp
+      |> create (create_inner "<>") `NeqOp
+      |> create (create_inner ">") `GtOp
+      |> create (create_inner "<") `LtOp
+      |> create (create_inner ">=") `GeOp
+      |> create (create_inner "<=") `LeOp
       |> create_logic (create_inner "&") create_and
       |> create_logic (create_inner "|") create_or
     in

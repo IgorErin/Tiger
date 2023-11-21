@@ -128,6 +128,26 @@ end
 module Common = struct
   let offset_of_int ~number = Ir.(const @@ (Frame.word_size * number))
   let offset ~source ~offset = Ir.(mem @@ binop offset Plus source)
+
+  let map_arithm =
+    let open Ir in
+    function
+    | `PlusOp -> Plus
+    | `MinusOp -> Minus
+    | `TimesOp -> Mul
+    | `DivideOp -> Div
+  ;;
+
+  let map_rel =
+    let open Ir in
+    function
+    | `EqOp -> EQ
+    | `NeqOp -> NE
+    | `LtOp -> LT
+    | `LeOp -> LT
+    | `GtOp -> GT
+    | `GeOp -> GE
+  ;;
 end
 
 let null_check value =
@@ -201,4 +221,18 @@ end
 
 let subscript_var ~var_exp ~index_exp =
   Array.get_checked ~array_exp:var_exp ~index_exp |> Exp.ex
+;;
+
+let nill = Ir.null |> Exp.ex
+let int c = c |> Ir.const |> Exp.ex
+
+let op_aritm ~left ~oper ~right =
+  let oper = Common.map_arithm oper in
+  Ir.binop left oper right |> Exp.ex
+;;
+
+let op_rel ~left ~oper ~right =
+  let oper = Common.map_rel oper in
+  let result t f = Ir.(cjump oper left right t f) in
+  Exp.cx result
 ;;

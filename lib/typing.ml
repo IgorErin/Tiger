@@ -77,8 +77,8 @@ module Check = struct
   ;;
 
   let string_op = function
-    | PlusOp -> Types.String
-    | GeOp | GtOp | LeOp | LtOp | EqOp -> Types.Int
+    | `PlusOp -> Types.String
+    | `GeOp | `GtOp | `LeOp | `LtOp | `EqOp -> Types.Int
     | _ -> Error.type_mismatch "must be string op string"
   ;;
 
@@ -122,10 +122,10 @@ module Check = struct
 
     let infer op type_ =
       match op with
-      | EqOp | NeqOp -> eq type_
-      | LtOp | LeOp | GtOp | GeOp -> compare type_
-      | PlusOp -> plus type_
-      | MinusOp | TimesOp | DivideOp -> arithmetic type_
+      | `EqOp | `NeqOp -> eq type_
+      | `LtOp | `LeOp | `GtOp | `GeOp -> compare type_
+      | `PlusOp -> plus type_
+      | `MinusOp | `TimesOp | `DivideOp -> arithmetic type_
     ;;
   end
 

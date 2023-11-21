@@ -17,7 +17,7 @@ and stm =
 
 and binop =
   | Plus
-  | Mminus
+  | Minus
   | Mul
   | Div
   | And
