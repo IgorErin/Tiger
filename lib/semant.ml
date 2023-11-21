@@ -74,12 +74,17 @@ let exp =
       T.if_ ~test ~then_
     | TWhileExp { test; body } ->
       let test = run_exp ctx test in
-      let body = run_exp ctx body in 
-      T.while_ ~test ~body 
+      let dl = Temp.new_label () in
+      let ctx = Env.add_done ~ctx ~l:dl in
+      let body = run_exp ctx body in
+      T.while_ ~test ~body ~dl
     | TForExp { lb; hb; body; _ } ->
       let lb = run_exp ctx lb in
       let hb = run_exp ctx hb in
-      run_exp ctx body
+      let dl = Temp.new_label () in
+      let ctx = Env.add_done ~ctx ~l:dl in
+      let body = run_exp ctx body in
+      T.for_ ~lb ~hb ~body ~dl
     | TBreakExp -> T.break ~l:(Env.get_done ~ctx)
     | TLetExp { decs = _; body = _ } -> failwith ""
     | TArrayExp { type_ = __; size; init } ->

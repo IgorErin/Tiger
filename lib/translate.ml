@@ -128,6 +128,8 @@ end
 module Common = struct
   let offset_of_int ~number = Ir.(const @@ (Frame.word_size * number))
   let offset ~source ~offset = Ir.(mem @@ binop offset Plus source)
+  let one = Ir.const 1
+  let zero = Ir.const 0
 
   let map_arithm =
     let open Ir in
@@ -155,6 +157,7 @@ module Common = struct
   ;;
 
   let is_true ~value ~t ~f = Ir.(cjump EQ value true_ t f)
+  let inc ~e = Ir.(move e (binop e Plus one))
 end
 
 let null_check value =
@@ -306,13 +309,12 @@ end
 
 let break ~l = Ir.(jump ~e:(name l) ~ls:[ l ]) |> Exp.nx
 
-let while_ ~test ~body =
-  let test = Exp.to_exp test in 
-  let body = Exp.to_stm body in 
+let while_ ~test ~body ~dl =
+  let test = Exp.to_exp test in
+  let body = Exp.to_stm body in
   let module C = Common in
   let sl = Temp.new_label () in
   let bl = Temp.new_label () in
-  let dl = Temp.new_label () in
   Ir.(
     seq
       [ label sl
@@ -322,7 +324,26 @@ let while_ ~test ~body =
       ; jump ~e:(name sl) ~ls:[ sl ]
       ; label dl
       ])
-    |> Exp.nx
+  |> Exp.nx
 ;;
 
-let for_test = 
+let for_ ~lb ~hb ~body ~dl =
+  let lb = Exp.to_exp lb in
+  let hb = Exp.to_exp hb in
+  let body = Exp.to_stm body in
+  let ht = Ir.temp @@ Temp.new_temp () in
+  let ct = Ir.temp @@ Temp.new_temp () in
+  let bl = Temp.new_label () in
+  let sl = Temp.new_label () in
+  Ir.(
+    seq
+      [ move ct lb
+      ; move ht hb
+      ; label sl
+      ; cjump LE ct ht bl dl
+      ; label bl
+      ; body
+      ; cjump LT ct hb sl dl
+      ])
+  |> Exp.nx
+;;
