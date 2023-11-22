@@ -6,8 +6,11 @@ module Level : sig
   val outer_most : t
   val new_level : prev:t -> label:Temp.label -> formals:bool list -> t
   val frame : t -> Frame.t
-  val prev : t -> t
+  val prev_exn : t -> t
   val equal : t -> t -> bool
+  val common_level_exn : t -> t -> t
+  val get_static_link : t -> Frame.access
+  val label_exn : t -> Temp.label
 end = struct
   type t =
     | Outer
@@ -37,12 +40,46 @@ end = struct
     | Regular { uneque; _ } -> uneque
   ;;
 
-  let prev = function
+  let prev_exn = function
     | Outer -> outer_encounter ()
     | Regular { prev; _ } -> prev
   ;;
 
+  let prev_opt = function
+    | Outer -> None
+    | Regular { prev; _ } -> Some prev
+  ;;
+
   let equal fst snd = Base.phys_equal (uneque fst) (uneque snd)
+
+  let common_level_exn fst snd =
+    let get_chain level =
+      let rec loop acc level =
+        match prev_opt level with
+        | Some x -> loop (level :: acc) x
+        | None -> level :: acc |> List.rev
+      in
+      loop [] level
+    in
+    let fst_chain = get_chain fst in
+    let snd_chain = get_chain snd in
+    List.combine fst_chain snd_chain
+    |> List.find_opt (fun (fst, snd) -> equal fst snd)
+    |> Core.Option.value_or_thunk ~default:(fun () ->
+      failwith "Common enclosed level not found")
+    |> Base.fst
+  ;;
+
+  let get_static_link level =
+    let frame = frame level in
+    let formals = Frame.formals frame in
+    List.hd formals
+  ;;
+
+  let label_exn = function
+    | Regular { frame; _ } -> Frame.label frame
+    | Outer -> failwith "Oter has no label"
+  ;;
 end
 
 module Access : sig
@@ -68,7 +105,6 @@ let alloc_local level =
   Access.create ~level ~access
 ;;
 
-let static_link frame = frame |> Frame.formals |> List.hd
 let fp = Ir.temp Frame.fp
 
 (* -----------------------------------------------------------*)
@@ -130,6 +166,7 @@ module Common = struct
   let offset ~source ~offset = Ir.(mem @@ binop offset Plus source)
   let one = Ir.const 1
   let zero = Ir.const 0
+  let fp = Ir.(temp Frame.fp)
 
   let map_arithm =
     let open Ir in
@@ -176,15 +213,14 @@ let simple_var ~access ~level =
     then acc
     else (
       let acc =
-        let frame = Level.frame current_level in
-        let static_link = static_link frame in
-        Frame.exp static_link acc
+        let static_link = Level.get_static_link current_level in
+        Frame.exp ~acc:static_link ~fp:acc
       in
-      let prev = Level.prev current_level in
+      let prev = Level.prev_exn current_level in
       loop prev acc)
   in
   let var_access = Access.access access in
-  loop level @@ Frame.exp var_access fp |> Exp.ex
+  loop level @@ Frame.exp ~acc:var_access ~fp |> Exp.ex
 ;;
 
 let field_var ~var ~number =
@@ -228,8 +264,10 @@ module Array = struct
     bound_check ~index:index_exp ~length ~result
   ;;
 
-  let alloc ~value ~length =
-    Frame.call_external ~name:"init_array" ~args:[ value; length ]
+  let alloc ~init ~size =
+    let init = Exp.to_exp init in
+    let size = Exp.to_exp size in
+    Frame.call_external ~name:"init_array" ~args:[ init; size ] |> Exp.ex
   ;;
 end
 
@@ -346,4 +384,21 @@ let for_ ~lb ~hb ~body ~dl =
       ; cjump LT ct hb sl dl
       ])
   |> Exp.nx
+;;
+
+let fcall ~fl ~cl ~args ~t =
+  let dl = Level.common_level_exn fl cl in
+  let step acc lv =
+    let sl = Level.get_static_link lv in
+    Frame.exp ~acc:sl ~fp:acc
+  in
+  let rec loop acc current =
+    let acc = step acc current in
+    if Level.equal current dl then acc else loop acc @@ Level.prev_exn current
+  in
+  let fp = loop Common.fp cl in
+  let args = fp :: List.map Exp.to_exp args in
+  let flabel = Level.label_exn fl in
+  let result = Ir.(call (name flabel) args) in
+  if Types.is_unit t then Ir.exp result |> Exp.nx else result |> Exp.ex
 ;;

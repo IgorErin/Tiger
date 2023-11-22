@@ -34,8 +34,6 @@ module Env = struct
   let level ctx = ctx.level
 end
 
-open Env
-
 let exp =
   let open Typedtree in
   let module P = Parsetree in
@@ -48,7 +46,11 @@ let exp =
     | TIntExp value -> T.int value
     (* TODO fragments. in separate pass *)
     | TStringExp string -> snd @@ T.String.const string
-    | TCallExp { func; args } -> failwith ""
+    | TCallExp { func; args } ->
+      let fl = Env.flook ctx func in
+      let cl = ctx.level in
+      let args = List.map (run_exp ctx) args in
+      T.fcall ~fl ~cl ~args ~t:type_
     | TOpExp { left; oper; right } ->
       let left = run_exp ctx left |> T.Exp.to_exp in
       let right = run_exp ctx right |> T.Exp.to_exp in
@@ -90,7 +92,7 @@ let exp =
     | TArrayExp { type_ = __; size; init } ->
       let size = run_exp ctx size in
       let init = run_exp ctx init in
-      init
+      T.Array.alloc ~init ~size
     | TRecordExp { type_ = _; fields } ->
       let exps = fields |> List.map (fun (_, _, exp) -> run_exp ctx exp) in
       T.Record.alloc exps

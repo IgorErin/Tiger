@@ -31,7 +31,7 @@ let formals { formals; _ } = formals
 let fp = Temp.new_temp ()
 let word_size = 32 (* for now *)
 
-let exp (InFrame offset) e =
+let exp ~acc:(InFrame offset) ~fp:e =
   let open Ir in
   mem @@ binop e Plus @@ const offset
 ;;
@@ -42,3 +42,5 @@ let call_external ~name ~args =
   let fname = create_name name in
   Ir.(call (name fname) args)
 ;;
+
+let label { label; _ } = label
