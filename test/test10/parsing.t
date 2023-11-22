@@ -5,9 +5,9 @@
   Parsetree.PWhileExp {
     test =
     (Parsetree.PSeqExp
-       [Parsetree.POpExp {left = (Parsetree.PIntExp 10); oper = Parsetree.GtOp;
+       [Parsetree.POpExp {left = (Parsetree.PIntExp 10); oper = `GtOp;
           right = (Parsetree.PIntExp 5)}
          ]);
     body =
-    Parsetree.POpExp {left = (Parsetree.PIntExp 5); oper = Parsetree.PlusOp;
+    Parsetree.POpExp {left = (Parsetree.PIntExp 5); oper = `PlusOp;
       right = (Parsetree.PIntExp 6)}}

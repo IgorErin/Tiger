@@ -10,4 +10,4 @@
       exp =
       Parsetree.POpExp {
         left = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "i")));
-        oper = Parsetree.MinusOp; right = (Parsetree.PIntExp 1)}}}
+        oper = `MinusOp; right = (Parsetree.PIntExp 1)}}}

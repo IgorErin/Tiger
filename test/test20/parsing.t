@@ -5,11 +5,11 @@
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PWhileExp {
     test =
-    Parsetree.POpExp {left = (Parsetree.PIntExp 10); oper = Parsetree.GtOp;
+    Parsetree.POpExp {left = (Parsetree.PIntExp 10); oper = `GtOp;
       right = (Parsetree.PIntExp 5)};
     body =
     (Parsetree.PSeqExp
        [Parsetree.POpExp {
           left = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "i")));
-          oper = Parsetree.PlusOp; right = (Parsetree.PIntExp 1)};
+          oper = `PlusOp; right = (Parsetree.PIntExp 1)};
          (Parsetree.PSeqExp [])])}

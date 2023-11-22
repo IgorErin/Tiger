@@ -97,7 +97,7 @@
                             [(Parsetree.PVarExp
                                 (Parsetree.PSimpleVar (13, "buffer")))
                               ]};
-                          oper = Parsetree.GeOp;
+                          oper = `GeOp;
                           right =
                           Parsetree.PCallExp {func = (3, "ord");
                             args = [(Parsetree.PStringExp "0")]}};
@@ -109,7 +109,7 @@
                             [(Parsetree.PVarExp
                                 (Parsetree.PSimpleVar (13, "buffer")))
                               ]};
-                          oper = Parsetree.LeOp;
+                          oper = `LeOp;
                           right =
                           Parsetree.PCallExp {func = (3, "ord");
                             args = [(Parsetree.PStringExp "9")]}};
@@ -126,15 +126,14 @@
                              left =
                              (Parsetree.PVarExp
                                 (Parsetree.PSimpleVar (13, "buffer")));
-                             oper = Parsetree.EqOp;
-                             right = (Parsetree.PStringExp " ")};
+                             oper = `EqOp; right = (Parsetree.PStringExp " ")};
                            then_ = (Parsetree.PIntExp 1);
                            else_ =
                            (Some Parsetree.POpExp {
                                    left =
                                    (Parsetree.PVarExp
                                       (Parsetree.PSimpleVar (13, "buffer")));
-                                   oper = Parsetree.EqOp;
+                                   oper = `EqOp;
                                    right = (Parsetree.PStringExp "\\n")})};
                          body =
                          Parsetree.PAssignExp {
@@ -177,16 +176,16 @@
                                  left =
                                  (Parsetree.PVarExp
                                     (Parsetree.PSimpleVar (15, "i")));
-                                 oper = Parsetree.TimesOp;
+                                 oper = `TimesOp;
                                  right = (Parsetree.PIntExp 10)};
-                               oper = Parsetree.PlusOp;
+                               oper = `PlusOp;
                                right =
                                Parsetree.PCallExp {func = (3, "ord");
                                  args =
                                  [(Parsetree.PVarExp
                                      (Parsetree.PSimpleVar (13, "buffer")))
                                    ]}};
-                             oper = Parsetree.MinusOp;
+                             oper = `MinusOp;
                              right =
                              Parsetree.PCallExp {func = (3, "ord");
                                args = [(Parsetree.PStringExp "0")]}}};
@@ -257,7 +256,7 @@
                test =
                Parsetree.POpExp {
                  left = (Parsetree.PVarExp (Parsetree.PSimpleVar (27, "a")));
-                 oper = Parsetree.EqOp; right = Parsetree.PNilExp};
+                 oper = `EqOp; right = Parsetree.PNilExp};
                then_ = (Parsetree.PVarExp (Parsetree.PSimpleVar (28, "b")));
                else_ =
                (Some Parsetree.PIfExp {
@@ -265,7 +264,7 @@
                        Parsetree.POpExp {
                          left =
                          (Parsetree.PVarExp (Parsetree.PSimpleVar (28, "b")));
-                         oper = Parsetree.EqOp; right = Parsetree.PNilExp};
+                         oper = `EqOp; right = Parsetree.PNilExp};
                        then_ =
                        (Parsetree.PVarExp (Parsetree.PSimpleVar (27, "a")));
                        else_ =
@@ -277,7 +276,7 @@
                                     (Parsetree.PFieldVar (
                                        (Parsetree.PSimpleVar (27, "a")),
                                        (21, "first"))));
-                                 oper = Parsetree.LtOp;
+                                 oper = `LtOp;
                                  right =
                                  (Parsetree.PVarExp
                                     (Parsetree.PFieldVar (
@@ -347,7 +346,7 @@
                         Parsetree.POpExp {
                           left =
                           (Parsetree.PVarExp (Parsetree.PSimpleVar (15, "i")));
-                          oper = Parsetree.GtOp; right = (Parsetree.PIntExp 0)};
+                          oper = `GtOp; right = (Parsetree.PIntExp 0)};
                         then_ =
                         (Parsetree.PSeqExp
                            [Parsetree.PCallExp {func = (30, "f");
@@ -356,7 +355,7 @@
                                  left =
                                  (Parsetree.PVarExp
                                     (Parsetree.PSimpleVar (15, "i")));
-                                 oper = Parsetree.DivideOp;
+                                 oper = `DivideOp;
                                  right = (Parsetree.PIntExp 10)}
                                 ]};
                              Parsetree.PCallExp {func = (0, "print");
@@ -367,7 +366,7 @@
                                      left =
                                      (Parsetree.PVarExp
                                         (Parsetree.PSimpleVar (15, "i")));
-                                     oper = Parsetree.MinusOp;
+                                     oper = `MinusOp;
                                      right =
                                      Parsetree.POpExp {
                                        left =
@@ -375,13 +374,13 @@
                                          left =
                                          (Parsetree.PVarExp
                                             (Parsetree.PSimpleVar (15, "i")));
-                                         oper = Parsetree.DivideOp;
+                                         oper = `DivideOp;
                                          right =
                                          Parsetree.POpExp {
                                            left = (Parsetree.PIntExp 10);
-                                           oper = Parsetree.TimesOp;
+                                           oper = `TimesOp;
                                            right = (Parsetree.PIntExp 10)}};
-                                       oper = Parsetree.PlusOp;
+                                       oper = `PlusOp;
                                        right =
                                        Parsetree.PCallExp {func = (3, "ord");
                                          args = [(Parsetree.PStringExp "0")]}}}
@@ -397,7 +396,7 @@
                  test =
                  Parsetree.POpExp {
                    left = (Parsetree.PVarExp (Parsetree.PSimpleVar (15, "i")));
-                   oper = Parsetree.LtOp; right = (Parsetree.PIntExp 0)};
+                   oper = `LtOp; right = (Parsetree.PIntExp 0)};
                  then_ =
                  (Parsetree.PSeqExp
                     [Parsetree.PCallExp {func = (0, "print");
@@ -405,7 +404,7 @@
                       Parsetree.PCallExp {func = (30, "f");
                         args =
                         [Parsetree.POpExp {left = (Parsetree.PIntExp 0);
-                           oper = Parsetree.MinusOp;
+                           oper = `MinusOp;
                            right =
                            (Parsetree.PVarExp (Parsetree.PSimpleVar (15, "i")))}
                           ]}
@@ -416,7 +415,7 @@
                          Parsetree.POpExp {
                            left =
                            (Parsetree.PVarExp (Parsetree.PSimpleVar (15, "i")));
-                           oper = Parsetree.GtOp; right = (Parsetree.PIntExp 0)};
+                           oper = `GtOp; right = (Parsetree.PIntExp 0)};
                          then_ =
                          Parsetree.PCallExp {func = (30, "f");
                            args =
@@ -437,7 +436,7 @@
                test =
                Parsetree.POpExp {
                  left = (Parsetree.PVarExp (Parsetree.PSimpleVar (32, "l")));
-                 oper = Parsetree.EqOp; right = Parsetree.PNilExp};
+                 oper = `EqOp; right = Parsetree.PNilExp};
                then_ =
                Parsetree.PCallExp {func = (0, "print");
                  args = [(Parsetree.PStringExp "\\n")]};

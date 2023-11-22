@@ -15,4 +15,4 @@
     body =
     Parsetree.POpExp {
       left = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")));
-      oper = Parsetree.PlusOp; right = (Parsetree.PIntExp 3)}}
+      oper = `PlusOp; right = (Parsetree.PIntExp 3)}}

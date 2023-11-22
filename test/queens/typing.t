@@ -84,7 +84,7 @@
                            { Typedtree.var_desc =
                              (Typedtree.TSimpleVar (12, "N")); var_type = int });
                         exp_type = int };
-                      oper = Parsetree.PlusOp;
+                      oper = `PlusOp;
                       right =
                       { Typedtree.exp_desc =
                         (Typedtree.TVarExp
@@ -92,7 +92,7 @@
                              (Typedtree.TSimpleVar (12, "N")); var_type = int });
                         exp_type = int }};
                     exp_type = int };
-                  oper = Parsetree.MinusOp;
+                  oper = `MinusOp;
                   right =
                   { Typedtree.exp_desc = (Typedtree.TIntExp 1); exp_type = int
                     }};
@@ -117,7 +117,7 @@
                            { Typedtree.var_desc =
                              (Typedtree.TSimpleVar (12, "N")); var_type = int });
                         exp_type = int };
-                      oper = Parsetree.PlusOp;
+                      oper = `PlusOp;
                       right =
                       { Typedtree.exp_desc =
                         (Typedtree.TVarExp
@@ -125,7 +125,7 @@
                              (Typedtree.TSimpleVar (12, "N")); var_type = int });
                         exp_type = int }};
                     exp_type = int };
-                  oper = Parsetree.MinusOp;
+                  oper = `MinusOp;
                   right =
                   { Typedtree.exp_desc = (Typedtree.TIntExp 1); exp_type = int
                     }};
@@ -161,7 +161,7 @@
                                     (Typedtree.TSimpleVar (12, "N"));
                                     var_type = int });
                                exp_type = int };
-                             oper = Parsetree.MinusOp;
+                             oper = `MinusOp;
                              right =
                              { Typedtree.exp_desc = (Typedtree.TIntExp 1);
                                exp_type = int }};
@@ -193,7 +193,7 @@
                                                (Typedtree.TSimpleVar (12, "N"));
                                                var_type = int });
                                           exp_type = int };
-                                        oper = Parsetree.MinusOp;
+                                        oper = `MinusOp;
                                         right =
                                         { Typedtree.exp_desc =
                                           (Typedtree.TIntExp 1); exp_type = int
@@ -229,7 +229,7 @@
                                                            ));
                                                         var_type = int });
                                                    exp_type = int };
-                                                 oper = Parsetree.EqOp;
+                                                 oper = `EqOp;
                                                  right =
                                                  { Typedtree.exp_desc =
                                                    (Typedtree.TVarExp
@@ -276,7 +276,7 @@
                               (Typedtree.TSimpleVar (24, "c")); var_type = int
                               });
                          exp_type = int };
-                       oper = Parsetree.EqOp;
+                       oper = `EqOp;
                        right =
                        { Typedtree.exp_desc =
                          (Typedtree.TVarExp
@@ -306,7 +306,7 @@
                                         (Typedtree.TSimpleVar (12, "N"));
                                         var_type = int });
                                    exp_type = int };
-                                 oper = Parsetree.MinusOp;
+                                 oper = `MinusOp;
                                  right =
                                  { Typedtree.exp_desc = (Typedtree.TIntExp 1);
                                    exp_type = int }};
@@ -343,7 +343,7 @@
                                                        ));
                                                     var_type = int });
                                                exp_type = int };
-                                             oper = Parsetree.EqOp;
+                                             oper = `EqOp;
                                              right =
                                              { Typedtree.exp_desc =
                                                (Typedtree.TIntExp 0);
@@ -373,8 +373,7 @@
                                                                   var_type =
                                                                   int });
                                                              exp_type = int };
-                                                           oper =
-                                                           Parsetree.PlusOp;
+                                                           oper = `PlusOp;
                                                            right =
                                                            { Typedtree.exp_desc =
                                                              (Typedtree.TVarExp
@@ -388,7 +387,7 @@
                                                        ));
                                                     var_type = int });
                                                exp_type = int };
-                                             oper = Parsetree.EqOp;
+                                             oper = `EqOp;
                                              right =
                                              { Typedtree.exp_desc =
                                                (Typedtree.TIntExp 0);
@@ -425,15 +424,14 @@
                                                                   var_type =
                                                                   int });
                                                              exp_type = int };
-                                                           oper =
-                                                           Parsetree.PlusOp;
+                                                           oper = `PlusOp;
                                                            right =
                                                            { Typedtree.exp_desc =
                                                              (Typedtree.TIntExp
                                                                 7);
                                                              exp_type = int }};
                                                          exp_type = int };
-                                                       oper = Parsetree.MinusOp;
+                                                       oper = `MinusOp;
                                                        right =
                                                        { Typedtree.exp_desc =
                                                          (Typedtree.TVarExp
@@ -446,7 +444,7 @@
                                                    ));
                                                 var_type = int });
                                            exp_type = int };
-                                         oper = Parsetree.EqOp;
+                                         oper = `EqOp;
                                          right =
                                          { Typedtree.exp_desc =
                                            (Typedtree.TIntExp 0);
@@ -482,13 +480,13 @@
                                                                   (25, "r"));
                                                                var_type = int });
                                                           exp_type = int };
-                                                        oper = Parsetree.PlusOp;
+                                                        oper = `PlusOp;
                                                         right =
                                                         { Typedtree.exp_desc =
                                                           (Typedtree.TIntExp 7);
                                                           exp_type = int }};
                                                       exp_type = int };
-                                                    oper = Parsetree.MinusOp;
+                                                    oper = `MinusOp;
                                                     right =
                                                     { Typedtree.exp_desc =
                                                       (Typedtree.TVarExp
@@ -524,7 +522,7 @@
                                                                (25, "r"));
                                                             var_type = int });
                                                        exp_type = int };
-                                                     oper = Parsetree.PlusOp;
+                                                     oper = `PlusOp;
                                                      right =
                                                      { Typedtree.exp_desc =
                                                        (Typedtree.TVarExp
@@ -578,7 +576,7 @@
                                                            (24, "c"));
                                                         var_type = int });
                                                    exp_type = int };
-                                                 oper = Parsetree.PlusOp;
+                                                 oper = `PlusOp;
                                                  right =
                                                  { Typedtree.exp_desc =
                                                    (Typedtree.TIntExp 1);
@@ -636,14 +634,13 @@
                                                                 var_type = int
                                                                 });
                                                            exp_type = int };
-                                                         oper =
-                                                         Parsetree.PlusOp;
+                                                         oper = `PlusOp;
                                                          right =
                                                          { Typedtree.exp_desc =
                                                            (Typedtree.TIntExp 7);
                                                            exp_type = int }};
                                                        exp_type = int };
-                                                     oper = Parsetree.MinusOp;
+                                                     oper = `MinusOp;
                                                      right =
                                                      { Typedtree.exp_desc =
                                                        (Typedtree.TVarExp
@@ -679,7 +676,7 @@
                                                                (25, "r"));
                                                             var_type = int });
                                                        exp_type = int };
-                                                     oper = Parsetree.PlusOp;
+                                                     oper = `PlusOp;
                                                      right =
                                                      { Typedtree.exp_desc =
                                                        (Typedtree.TVarExp

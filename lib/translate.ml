@@ -167,6 +167,7 @@ module Common = struct
   let one = Ir.const 1
   let zero = Ir.const 0
   let fp = Ir.(temp Frame.fp)
+  let rv = Ir.(temp Frame.rv)
 
   let map_arithm =
     let open Ir in
@@ -306,10 +307,7 @@ let if_ ~test ~then_ =
 ;;
 
 module String = struct
-  let const str =
-    let label = Temp.new_label () in
-    (str, label), Exp.ex @@ Ir.name label
-  ;;
+  let const ~lb = Exp.ex @@ Ir.name lb
 end
 
 module Int = struct
@@ -401,4 +399,17 @@ let fcall ~fl ~cl ~args ~t =
   let flabel = Level.label_exn fl in
   let result = Ir.(call (name flabel) args) in
   if Types.is_unit t then Ir.exp result |> Exp.nx else result |> Exp.ex
+;;
+
+let save_to_rv body = Ir.(move Common.rv body) |> Exp.nx
+
+let fun_ ~level ~body =
+  let frame = Level.frame level in
+  let body = Exp.to_stm body in
+  Frame.enter_exit ~fr:frame ~stm:body
+;;
+
+let let_in ~inits ~body =
+  let stms = inits @ [ body ] |> List.map Exp.to_stm in
+  Ir.seq stms |> Exp.nx
 ;;

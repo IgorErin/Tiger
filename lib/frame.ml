@@ -29,6 +29,7 @@ let new_frame ~label ~formals =
 
 let formals { formals; _ } = formals
 let fp = Temp.new_temp ()
+let rv = Temp.new_label ()
 let word_size = 32 (* for now *)
 
 let exp ~acc:(InFrame offset) ~fp:e =
@@ -44,3 +45,9 @@ let call_external ~name ~args =
 ;;
 
 let label { label; _ } = label
+
+let enter_exit ~fr ~stm =
+  let _ = fr in
+  let _ = stm in
+  failwith ""
+;;

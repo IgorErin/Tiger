@@ -9,7 +9,7 @@
         Typedtree.TOpExp {
           left =
           { Typedtree.exp_desc = (Typedtree.TIntExp 10); exp_type = int };
-          oper = Parsetree.GtOp;
+          oper = `GtOp;
           right =
           { Typedtree.exp_desc = (Typedtree.TIntExp 20); exp_type = int }};
         exp_type = int };

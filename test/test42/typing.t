@@ -153,7 +153,7 @@
                             (Typedtree.TSimpleVar (26, "rec2"));
                             var_type =
                             {(name : string)(dates : (Name  arrtype1))} },
-                          (20, "dates")));
+                          1));
                        var_type = array of int },
                      { Typedtree.exp_desc = (Typedtree.TIntExp 2);
                        exp_type = int }
@@ -174,7 +174,7 @@
                              (Typedtree.TSimpleVar (26, "rec2"));
                              var_type =
                              {(name : string)(dates : (Name  arrtype1))} },
-                           (20, "dates")));
+                           1));
                         var_type = array of int },
                       { Typedtree.exp_desc = (Typedtree.TIntExp 0);
                         exp_type = int }
@@ -194,7 +194,7 @@
                         var_type =
                         {(name : string)(address : string)(id : int)(age : int)}
                         },
-                      (14, "name")));
+                      0));
                    var_type = string };
                  exp =
                  { Typedtree.exp_desc = (Typedtree.TStringExp "sdf");
@@ -230,7 +230,7 @@
                              exp_type = int }
                            ));
                         var_type = (Name  rectype1) },
-                      (17, "age")));
+                      3));
                    var_type = int };
                  exp =
                  { Typedtree.exp_desc = (Typedtree.TIntExp 23); exp_type = int
@@ -250,7 +250,7 @@
                              exp_type = int }
                            ));
                         var_type = (Name  rectype1) },
-                      (14, "name")));
+                      0));
                    var_type = string };
                  exp =
                  { Typedtree.exp_desc = (Typedtree.TStringExp "kati");

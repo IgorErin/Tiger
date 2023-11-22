@@ -44,6 +44,6 @@
       test =
       Parsetree.POpExp {
         left = (Parsetree.PVarExp (Parsetree.PSimpleVar (16, "rec")));
-        oper = Parsetree.NeqOp;
+        oper = `NeqOp;
         right = (Parsetree.PVarExp (Parsetree.PSimpleVar (17, "arr")))};
       then_ = (Parsetree.PIntExp 3); else_ = (Some (Parsetree.PIntExp 4))}}

@@ -28,7 +28,7 @@
              args =
              [Parsetree.POpExp {
                 left = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "a")));
-                oper = Parsetree.PlusOp; right = (Parsetree.PIntExp 1)}
+                oper = `PlusOp; right = (Parsetree.PIntExp 1)}
                ]}
            };
           { Parsetree.pfun_name = (15, "do_nothing2");

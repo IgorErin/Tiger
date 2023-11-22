@@ -6,7 +6,7 @@
   Parsetree.PIfExp {
     test =
     (Parsetree.PSeqExp
-       [Parsetree.POpExp {left = (Parsetree.PIntExp 5); oper = Parsetree.GtOp;
+       [Parsetree.POpExp {left = (Parsetree.PIntExp 5); oper = `GtOp;
           right = (Parsetree.PIntExp 4)}
          ]);
     then_ = (Parsetree.PIntExp 13); else_ = (Some (Parsetree.PStringExp " "))}

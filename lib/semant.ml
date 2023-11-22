@@ -9,6 +9,10 @@ module Env = struct
     ; done_label : Temp.label option
     }
 
+  type frag =
+    | String of Temp.label * string
+    | Fun of Ir.stm * Translate.Level.t
+
   let addf ctx symbol level = { ctx with fenv = Symbol.enter ctx.fenv symbol level }
   let addv ctx symbol access = { ctx with venv = Symbol.enter ctx.venv symbol access }
 
@@ -32,20 +36,36 @@ module Env = struct
   ;;
 
   let level ctx = ctx.level
+  let add mls item = mls := item :: !mls
+  let empty : frag list ref = ref []
+end
+
+module Common = struct
+  let filter_typed =
+    let open Typedtree in
+    function
+    | TVarDec { name; init; _ } -> Some (`Var (name, init))
+    | TFunctionDec x -> Some (`Fun x)
+    | TTypeDec _ -> None
+  ;;
 end
 
 let exp =
   let open Typedtree in
   let module P = Parsetree in
   let module T = Translate in
+  let fragments : Env.frag list ref = ref [] in
+  let add_fragment = Env.add fragments in
   let rec run_exp (ctx : Env.ctx) exp =
     let type_ = exp.exp_type in
     match exp.exp_desc with
     | TVarExp var -> run_var ctx var
     | TNilExp -> T.nill
     | TIntExp value -> T.int value
-    (* TODO fragments. in separate pass *)
-    | TStringExp string -> snd @@ T.String.const string
+    | TStringExp string ->
+      let lb = Temp.new_label () in
+      add_fragment (String (lb, string));
+      T.String.const ~lb
     | TCallExp { func; args } ->
       let fl = Env.flook ctx func in
       let cl = ctx.level in
@@ -88,7 +108,18 @@ let exp =
       let body = run_exp ctx body in
       T.for_ ~lb ~hb ~body ~dl
     | TBreakExp -> T.break ~l:(Env.get_done ~ctx)
-    | TLetExp { decs = _; body = _ } -> failwith ""
+    | TLetExp { decs; body } ->
+      decs
+      |> List.fold_left
+           (fun ((ctx, inits) as default) next ->
+             run_dec ctx next
+             |> Option.map (fun (ctx, init) -> ctx, init :: inits)
+             |> Option.value ~default)
+           (ctx, [])
+      |> fun (ctx, inits) ->
+      let body = run_exp ctx body in
+      let inits = List.rev inits in
+      T.let_in ~inits ~body
     | TArrayExp { type_ = __; size; init } ->
       let size = run_exp ctx size in
       let init = run_exp ctx init in
@@ -96,20 +127,38 @@ let exp =
     | TRecordExp { type_ = _; fields } ->
       let exps = fields |> List.map (fun (_, _, exp) -> run_exp ctx exp) in
       T.Record.alloc exps
+  and run_dec ctx = function
+    | TVarDec { name; init; _ } ->
+      let init = run_exp ctx init in
+      let access = T.alloc_local ctx.level in
+      let ctx = Env.addv ctx name access in
+      let exp = T.simple_var ~access ~level:ctx.level in
+      Some (ctx, exp)
+    | TFunctionDec ls ->
+      ls
+      |> List.iter (fun { fun_body; fun_params; _ } ->
+        let formals = List.map (fun _ -> false) fun_params in
+        let lb = Temp.new_label () in
+        let lv = Translate.Level.new_level ~prev:ctx.level ~label:lb ~formals in
+        let body = run_exp ctx fun_body in
+        let result = T.fun_ ~level:lv ~body in
+        add_fragment (Fun (result, lv)));
+      None
+    | TTypeDec _ -> None
   and run_var ctx var =
     let type_ = var.var_type in
     match var.var_desc with
     | TSimpleVar var ->
       let access = Env.vlook ctx var in
       let level = Env.level ctx in
-      Translate.simple_var ~access ~level
+      T.simple_var ~access ~level
     | TFieldVar (var, number) ->
-      let var = run_var ctx var |> Translate.Exp.to_exp |> Translate.null_check in
-      Translate.field_var ~var ~number
+      let var = run_var ctx var |> T.Exp.to_exp |> T.null_check in
+      T.field_var ~var ~number
     | TSubscriptVar (var, exp) ->
       let exp = run_exp ctx exp in
-      let var = run_var ctx var |> Translate.Exp.to_exp |> Translate.null_check in
-      Translate.subscript_var ~var_exp:var ~index_exp:exp
+      let var = run_var ctx var |> T.Exp.to_exp |> T.null_check in
+      T.subscript_var ~var_exp:var ~index_exp:exp
   in
   ()
 ;;

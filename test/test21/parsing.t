@@ -26,21 +26,20 @@
              test =
              Parsetree.POpExp {
                left = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "n")));
-               oper = Parsetree.EqOp; right = (Parsetree.PIntExp 0)};
+               oper = `EqOp; right = (Parsetree.PIntExp 0)};
              then_ = (Parsetree.PIntExp 1);
              else_ =
              (Some Parsetree.POpExp {
                      left =
                      (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "n")));
-                     oper = Parsetree.TimesOp;
+                     oper = `TimesOp;
                      right =
                      Parsetree.PCallExp {func = (12, "nfactor");
                        args =
                        [Parsetree.POpExp {
                           left =
                           (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "n")));
-                          oper = Parsetree.MinusOp;
-                          right = (Parsetree.PIntExp 1)}
+                          oper = `MinusOp; right = (Parsetree.PIntExp 1)}
                          ]}})}
            }
           ])

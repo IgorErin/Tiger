@@ -21,5 +21,5 @@
             exp =
             Parsetree.POpExp {
               left = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")));
-              oper = Parsetree.PlusOp; right = (Parsetree.PIntExp 1)}};
+              oper = `PlusOp; right = (Parsetree.PIntExp 1)}};
            (Parsetree.PSeqExp [])])}}

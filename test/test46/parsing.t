@@ -28,8 +28,8 @@
     (Parsetree.PSeqExp
        [Parsetree.POpExp {
           left = (Parsetree.PVarExp (Parsetree.PSimpleVar (15, "b")));
-          oper = Parsetree.EqOp; right = Parsetree.PNilExp};
+          oper = `EqOp; right = Parsetree.PNilExp};
          Parsetree.POpExp {
            left = (Parsetree.PVarExp (Parsetree.PSimpleVar (15, "b")));
-           oper = Parsetree.NeqOp; right = Parsetree.PNilExp}
+           oper = `NeqOp; right = Parsetree.PNilExp}
          ])}

@@ -34,7 +34,7 @@
                           { Typedtree.var_desc =
                             (Typedtree.TSimpleVar (13, "n")); var_type = int });
                        exp_type = int };
-                     oper = Parsetree.EqOp;
+                     oper = `EqOp;
                      right =
                      { Typedtree.exp_desc = (Typedtree.TIntExp 0);
                        exp_type = int }};
@@ -51,7 +51,7 @@
                                   (Typedtree.TSimpleVar (13, "n"));
                                   var_type = int });
                              exp_type = int };
-                           oper = Parsetree.TimesOp;
+                           oper = `TimesOp;
                            right =
                            { Typedtree.exp_desc =
                              Typedtree.TCallExp {func = (12, "nfactor");
@@ -65,7 +65,7 @@
                                            (Typedtree.TSimpleVar (13, "n"));
                                            var_type = int });
                                       exp_type = int };
-                                    oper = Parsetree.MinusOp;
+                                    oper = `MinusOp;
                                     right =
                                     { Typedtree.exp_desc =
                                       (Typedtree.TIntExp 1); exp_type = int }};

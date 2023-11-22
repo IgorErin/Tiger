@@ -36,7 +36,7 @@
                            { Typedtree.var_desc =
                              (Typedtree.TSimpleVar (13, "a")); var_type = int });
                         exp_type = int };
-                      oper = Parsetree.PlusOp;
+                      oper = `PlusOp;
                       right =
                       { Typedtree.exp_desc = (Typedtree.TIntExp 1);
                         exp_type = int }};

@@ -29,7 +29,7 @@
                  args =
                  [Parsetree.POpExp {
                     left = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "a")));
-                    oper = Parsetree.PlusOp; right = (Parsetree.PIntExp 1)}
+                    oper = `PlusOp; right = (Parsetree.PIntExp 1)}
                    ]};
                 (Parsetree.PIntExp 0)])
            };
