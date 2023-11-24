@@ -5,3 +5,5 @@
   $ Tiger -dparsetree ./code.tig 
   Parsetree.PIfExp {test = (Parsetree.PIntExp 20);
     then_ = (Parsetree.PIntExp 3); else_ = None}
+  message: Type must be Unit
+  error: Type mismatch

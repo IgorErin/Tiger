@@ -23,3 +23,5 @@
     body =
     Parsetree.PCallExp {func = (12, "g");
       args = [(Parsetree.PStringExp "one"); (Parsetree.PStringExp "two")]}}
+  message: Types must be equal int =/= String
+  error: Type mismatch

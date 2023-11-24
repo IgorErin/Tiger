@@ -25,3 +25,5 @@
       args =
       [(Parsetree.PIntExp 3); (Parsetree.PStringExp "one");
         (Parsetree.PIntExp 5)]}}
+  message: Call of g, parameters = 2, arguemnts = 3
+  error: Type mismatch

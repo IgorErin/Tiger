@@ -11,3 +11,5 @@
     body =
     Parsetree.POpExp {left = (Parsetree.PIntExp 5); oper = `PlusOp;
       right = (Parsetree.PIntExp 6)}}
+  message: Type must be Unit
+  error: Type mismatch

@@ -25,3 +25,5 @@
         init = Parsetree.PNilExp}
       ];
     body = (Parsetree.PVarExp (Parsetree.PSimpleVar (15, "a")))}
+  message: Nil unexpected
+  error: Type mismatch

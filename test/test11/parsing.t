@@ -11,3 +11,5 @@
       Parsetree.POpExp {
         left = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "i")));
         oper = `MinusOp; right = (Parsetree.PIntExp 1)}}}
+  message: Type msut be Int
+  error: Type mismatch

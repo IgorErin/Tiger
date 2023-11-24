@@ -25,3 +25,5 @@
           ])
       ];
     body = (Parsetree.PStringExp "")}
+  message: Cycl type a name
+  error: Umbiguos

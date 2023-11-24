@@ -21,3 +21,5 @@
           size = (Parsetree.PIntExp 10); init = (Parsetree.PStringExp " ")}}
       ];
     body = (Parsetree.PIntExp 0)}
+  message: Types must be equal int =/= String
+  error: Type mismatch

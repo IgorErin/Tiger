@@ -58,3 +58,5 @@
     body =
     Parsetree.PCallExp {func = (12, "do_nothing1");
       args = [(Parsetree.PIntExp 0); (Parsetree.PStringExp "str2")]}}
+  message: undef fun call
+  error: unbound name: do_nothing2

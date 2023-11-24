@@ -10,3 +10,5 @@
           right = (Parsetree.PIntExp 4)}
          ]);
     then_ = (Parsetree.PIntExp 13); else_ = (Some (Parsetree.PStringExp " "))}
+  message: Types must be equal int =/= String
+  error: Type mismatch

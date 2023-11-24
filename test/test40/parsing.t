@@ -21,3 +21,5 @@
       ];
     body =
     Parsetree.PCallExp {func = (12, "g"); args = [(Parsetree.PIntExp 2)]}}
+  message: Types must be equal int =/= unit
+  error: Type mismatch

@@ -22,3 +22,5 @@
       ];
     body =
     Parsetree.PCallExp {func = (12, "g"); args = [(Parsetree.PStringExp "one")]}}
+  message: Call of g, parameters = 2, arguemnts = 1
+  error: Type mismatch

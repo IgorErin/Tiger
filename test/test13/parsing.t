@@ -5,3 +5,5 @@
   $ Tiger -dparsetree ./code.tig 
   Parsetree.POpExp {left = (Parsetree.PIntExp 3); oper = `GtOp;
     right = (Parsetree.PStringExp "df")}
+  message: Types must be equal int =/= String
+  error: Type mismatch

@@ -13,3 +13,4 @@
           left = (Parsetree.PVarExp (Parsetree.PSimpleVar (13, "i")));
           oper = `PlusOp; right = (Parsetree.PIntExp 1)};
          (Parsetree.PSeqExp [])])}
+  error: unbound name: i

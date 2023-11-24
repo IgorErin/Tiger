@@ -38,3 +38,4 @@
            ])
       ];
     body = (Parsetree.PVarExp (Parsetree.PSimpleVar (16, "d")))}
+  error: unbound type: treelist

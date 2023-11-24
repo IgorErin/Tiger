@@ -23,3 +23,5 @@
         type_ = (Some (12, "a")); init = (Parsetree.PStringExp "")}
       ];
     body = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")))}
+  message: Same name in mutual type def: a
+  error: Umbiguos

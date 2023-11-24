@@ -25,3 +25,5 @@
           size = (Parsetree.PIntExp 10); init = (Parsetree.PIntExp 0)}}
       ];
     body = (Parsetree.PVarExp (Parsetree.PSimpleVar (14, "arr1")))}
+  message: Types must be equal array of int =/= (Name  arrtype1)
+  error: Type mismatch

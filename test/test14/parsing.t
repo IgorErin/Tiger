@@ -47,3 +47,5 @@
         oper = `NeqOp;
         right = (Parsetree.PVarExp (Parsetree.PSimpleVar (17, "arr")))};
       then_ = (Parsetree.PIntExp 3); else_ = (Some (Parsetree.PIntExp 4))}}
+  message: Types must be equal {(name : String); (id : int);} =/= array of int
+  error: Type mismatch

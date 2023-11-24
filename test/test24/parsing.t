@@ -15,3 +15,5 @@
     (Parsetree.PVarExp
        (Parsetree.PSubscriptVar ((Parsetree.PSimpleVar (12, "d")),
           (Parsetree.PIntExp 3))))}
+  message: Array type expected
+  error: not a record: int

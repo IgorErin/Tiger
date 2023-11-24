@@ -8,4 +8,4 @@
   	a
   end
   $ Tiger -dparsetree ./code.tig 
-  Parsing error.
+  parsing error: : end_of_input

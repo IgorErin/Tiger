@@ -46,3 +46,5 @@
       ];
     body =
     Parsetree.PCallExp {func = (12, "nfactor"); args = [(Parsetree.PIntExp 10)]}}
+  message: Types must be equal int =/= unit
+  error: Type mismatch

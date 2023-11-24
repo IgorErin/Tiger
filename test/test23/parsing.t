@@ -43,3 +43,5 @@
               (14, "id")));
            exp = (Parsetree.PStringExp "")}
          ])}
+  message: Types must be equal String =/= int
+  error: Type mismatch

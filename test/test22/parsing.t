@@ -34,3 +34,5 @@
       var =
       (Parsetree.PFieldVar ((Parsetree.PSimpleVar (15, "rec1")), (16, "nam")));
       exp = (Parsetree.PStringExp "asd")}}
+  message: No such fiedl in {(name : String); (id : int);}
+  error: unbound name: nam

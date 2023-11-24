@@ -29,3 +29,5 @@
           ])
       ];
     body = (Parsetree.PIntExp 0)}
+  message: Same name in mutual fun def: g
+  error: Umbiguos

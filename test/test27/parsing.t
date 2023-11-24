@@ -14,3 +14,5 @@
     body =
     (Parsetree.PVarExp
        (Parsetree.PFieldVar ((Parsetree.PSimpleVar (12, "d")), (13, "f"))))}
+  message: Attemt to get field f on int type
+  error: not a record: int

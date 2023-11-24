@@ -16,3 +16,5 @@
     Parsetree.POpExp {
       left = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")));
       oper = `PlusOp; right = (Parsetree.PIntExp 3)}}
+  message: Types must be equal unit =/= int
+  error: Type mismatch

@@ -12,3 +12,5 @@
        type_ = (Some (10, "int")); init = (Parsetree.PStringExp " ")}
       ];
     body = (Parsetree.PVarExp (Parsetree.PSimpleVar (12, "a")))}
+  message: Types must be equal String =/= int
+  error: Type mismatch
