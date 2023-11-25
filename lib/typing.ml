@@ -140,9 +140,12 @@ module Check = struct
   ;;
 
   let infer_type fst snd =
+    let fst = Types.actual_type fst in
+    let snd = Types.actual_type snd in
     let open Types in
     match actual_type fst, actual_type snd with
     | (Record _ as r), Nil | Nil, (Record _ as r) -> r
+    | (Array _ as r), Nil | Nil, (Array _ as r) -> r
     | _ ->
       if Types.equal fst snd
       then fst
@@ -252,7 +255,7 @@ module Check = struct
   ;;
 end
 
-let get_type Typedtree.{ exp_type; _ } = exp_type
+let get_type Typedtree.{ exp_type; _ } = Types.actual_type exp_type
 let ( >> ) f g x = f x |> g
 
 let not_name =
@@ -356,22 +359,22 @@ let rec transExp (env : env) exp =
     | PCallExp { func; args } ->
       Symbol.look env.funs func
       |> (function
-      | Some func_sig ->
-        let args = List.map trexp args in
-        let () =
-          let par = List.length func_sig.formals in
-          let arg = List.length args in
-          if par = arg
-          then List.map get_type args |> List.iter2 Check.equal func_sig.formals
-          else (
-            let fname = Symbol.name func in
-            Printf.sprintf "Call of %s, parameters = %d, arguemnts = %d" fname par arg
-            |> Error.type_mismatch)
-        in
-        let exp = TCallExp { func; args } in
-        assert (not_name func_sig.result);
-        mk_typed_exp func_sig.result exp
-      | None -> Error.undef_fun_call func)
+       | Some func_sig ->
+         let args = List.map trexp args in
+         let () =
+           let par = List.length func_sig.formals in
+           let arg = List.length args in
+           if par = arg
+           then List.map get_type args |> List.iter2 Check.equal func_sig.formals
+           else (
+             let fname = Symbol.name func in
+             Printf.sprintf "Call of %s, parameters = %d, arguemnts = %d" fname par arg
+             |> Error.type_mismatch)
+         in
+         let exp = TCallExp { func; args } in
+         assert (not_name func_sig.result);
+         mk_typed_exp func_sig.result exp
+       | None -> Error.undef_fun_call func)
     | POpExp { left; oper; right } ->
       let left = trexp left in
       let right = trexp right in
@@ -380,16 +383,17 @@ let rec transExp (env : env) exp =
       let desc = TOpExp { left; oper; right } in
       mk_typed_exp type_ desc
     | PSeqExp ls ->
-      List.rev ls
+      ls
+      |> List.rev
       |> (function
-      | [] -> mk_typed_exp Types.Unit @@ TSeqExp []
-      | [ hd ] -> trexp hd
-      | hd :: tl ->
-        let tl = List.map trexp tl in
-        let hd = trexp hd in
-        let texp = TSeqExp (hd :: tl) in
-        assert (not_name @@ get_type hd);
-        mk_typed_exp (get_type hd) texp)
+       | [] -> mk_typed_exp Types.Unit @@ TSeqExp []
+       | [ hd ] -> trexp hd
+       | hd :: tl ->
+         let tl = List.map trexp tl in
+         let hd = trexp hd in
+         let texp = TSeqExp (List.rev @@ (hd :: tl)) in
+         assert (not_name @@ get_type hd);
+         mk_typed_exp (get_type hd) texp)
     | PAssignExp { var; exp } ->
       let exp = trexp exp in
       let expty = exp |> get_type in
@@ -462,37 +466,37 @@ let rec transExp (env : env) exp =
       Symbol.look env.types type_
       |> Option.map Types.actual_type
       |> (function
-      | Some (Types.Array (mem_type, _) as type_) ->
-        let size = trexp size in
-        let init = trexp init in
-        let () =
-          let () = size |> get_type |> Check.int in
-          init |> get_type |> Check.equal mem_type
-        in
-        let texp = TArrayExp { type_; size; init } in
-        mk_typed_exp type_ texp
-      | Some t -> Error.not_a_array t
-      | None -> Error.unbound_type ~m:"Array type not found" type_)
+       | Some (Types.Array (mem_type, _) as type_) ->
+         let size = trexp size in
+         let init = trexp init in
+         let () =
+           let () = size |> get_type |> Check.int in
+           init |> get_type |> Check.equal mem_type
+         in
+         let texp = TArrayExp { type_; size; init } in
+         mk_typed_exp type_ texp
+       | Some t -> Error.not_a_array t
+       | None -> Error.unbound_type ~m:"Array type not found" type_)
     | PRecordExp { type_; fields } ->
       Symbol.look env.types type_
       |> Option.map Types.actual_type
       |> (function
-      | Some (Types.Record (ls, _) as type_) ->
-        let fields =
-          List.map2
-            (fun (fsts, e) (snds, ty) ->
-              let () = Check.sy_equal fsts snds ~m:"Names in record check mismatch" in
-              let e = trexp e in
-              let exp_type = get_type e in
-              let () = Check.equal ty exp_type in
-              fsts, ty, e)
-            fields
-            ls
-        in
-        let desc = Typedtree.TRecordExp { type_; fields } in
-        mk_typed_exp type_ desc
-      | Some actual -> Error.not_a_record actual
-      | None -> Error.unbound_type ~m:"Record expr type unbound." type_)
+       | Some (Types.Record (ls, _) as type_) ->
+         let fields =
+           List.map2
+             (fun (fsts, e) (snds, ty) ->
+               let () = Check.sy_equal fsts snds ~m:"Names in record check mismatch" in
+               let e = trexp e in
+               let exp_type = get_type e in
+               let () = Check.equal ty exp_type in
+               fsts, ty, e)
+             fields
+             ls
+         in
+         let desc = Typedtree.TRecordExp { type_; fields } in
+         mk_typed_exp type_ desc
+       | Some actual -> Error.not_a_record actual
+       | None -> Error.unbound_type ~m:"Record expr type unbound." type_)
   and trvar venv v =
     let trvar = trvar venv in
     match v with
@@ -500,8 +504,8 @@ let rec transExp (env : env) exp =
       Symbol.look venv s
       |> Option.map Types.actual_type
       |> (function
-      | Some var_type -> { var_type; var_desc = TSimpleVar s }
-      | None -> Error.unbound_name s)
+       | Some var_type -> { var_type; var_desc = TSimpleVar s }
+       | None -> Error.unbound_name s)
     | PFieldVar (v, f) ->
       let v = trvar v in
       let index, ft = Check.get_field_type v.var_type f in
@@ -524,11 +528,11 @@ and transDec env = function
     let type_ =
       Symbol.look env.types type_
       |> (function
-           | Some typ -> typ
-           | None ->
-             let var_name = Symbol.name name in
-             let m = Printf.sprintf "Anbound var (%s) type annotation" var_name in
-             Error.unbound_type ~m type_)
+            | Some typ -> typ
+            | None ->
+              let var_name = Symbol.name name in
+              let m = Printf.sprintf "Anbound var (%s) type annotation" var_name in
+              Error.unbound_type ~m type_)
       |> Check.infer_type (get_type init)
     in
     let vars = Symbol.enter env.vars name type_ in
@@ -556,8 +560,8 @@ and transDec env = function
     let set_type { ptd_name; ptd_type } =
       Symbol.look types ptd_name
       |> (function
-           | Some v -> v
-           | None -> Error.unbound_type ptd_name)
+            | Some v -> v
+            | None -> Error.unbound_type ptd_name)
       |> function
       | Types.Name (name, r) as named ->
         assert (Symbol.equal name ptd_name);
@@ -589,8 +593,8 @@ and transDec env = function
     let type_of_result x =
       x
       |> (function
-           | Some t -> ty_of_symbol t
-           | None -> Unit)
+            | Some t -> ty_of_symbol t
+            | None -> Unit)
       |> Types.actual_type
     in
     let type_of_parm x = ty_of_symbol x.Parsetree.pfd_type in

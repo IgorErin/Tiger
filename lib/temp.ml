@@ -1,5 +1,5 @@
-type temp = string * int
-type label = string * int
+type temp = string * int [@@deriving show]
+type label = string * int [@@deriving show]
 
 let incr r = r := !r + 1
 let temp_count = ref 0

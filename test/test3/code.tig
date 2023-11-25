@@ -1,9 +1,8 @@
-/* arr1 is valid since expression 0 is int = myint */
+/* a record type and a record variable */
 let
-	type myint = int
-	type  arrtype = array of myint
-
-	var arr1:arrtype := arrtype [10] of 0
+	type  rectype = {name:string, age:int}
+	var rec1:rectype := rectype {name="Nobody", age=1000}
 in
-	arr1
+	(rec1.name := "Somebody";
+	rec1)
 end

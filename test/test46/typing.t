@@ -30,7 +30,7 @@
                      { Typedtree.var_desc = (Typedtree.TSimpleVar (15, "b"));
                        var_type = {(name : string)(id : int)} });
                   exp_type = {(name : string)(id : int)} };
-                oper = `NeqOp;
+                oper = `EqOp;
                 right =
                 { Typedtree.exp_desc = Typedtree.TNilExp; exp_type = nil }};
               exp_type = int };
@@ -42,7 +42,7 @@
                       { Typedtree.var_desc = (Typedtree.TSimpleVar (15, "b"));
                         var_type = {(name : string)(id : int)} });
                    exp_type = {(name : string)(id : int)} };
-                 oper = `EqOp;
+                 oper = `NeqOp;
                  right =
                  { Typedtree.exp_desc = Typedtree.TNilExp; exp_type = nil }};
                exp_type = int }

@@ -27,27 +27,27 @@
              fun_body =
              { Typedtree.exp_desc =
                (Typedtree.TSeqExp
-                  [{ Typedtree.exp_desc = (Typedtree.TIntExp 0); exp_type = int
-                     };
-                    { Typedtree.exp_desc =
-                      Typedtree.TCallExp {func = (15, "do_nothing2");
-                        args =
-                        [{ Typedtree.exp_desc =
-                           Typedtree.TOpExp {
-                             left =
-                             { Typedtree.exp_desc =
-                               (Typedtree.TVarExp
-                                  { Typedtree.var_desc =
-                                    (Typedtree.TSimpleVar (13, "a"));
-                                    var_type = int });
-                               exp_type = int };
-                             oper = `PlusOp;
-                             right =
-                             { Typedtree.exp_desc = (Typedtree.TIntExp 1);
-                               exp_type = int }};
-                           exp_type = int }
-                          ]};
-                      exp_type = string }
+                  [{ Typedtree.exp_desc =
+                     Typedtree.TCallExp {func = (15, "do_nothing2");
+                       args =
+                       [{ Typedtree.exp_desc =
+                          Typedtree.TOpExp {
+                            left =
+                            { Typedtree.exp_desc =
+                              (Typedtree.TVarExp
+                                 { Typedtree.var_desc =
+                                   (Typedtree.TSimpleVar (13, "a"));
+                                   var_type = int });
+                              exp_type = int };
+                            oper = `PlusOp;
+                            right =
+                            { Typedtree.exp_desc = (Typedtree.TIntExp 1);
+                              exp_type = int }};
+                          exp_type = int }
+                         ]};
+                     exp_type = string };
+                    { Typedtree.exp_desc = (Typedtree.TIntExp 0);
+                      exp_type = int }
                     ]);
                exp_type = int }
              };
@@ -60,21 +60,21 @@
               fun_body =
               { Typedtree.exp_desc =
                 (Typedtree.TSeqExp
-                   [{ Typedtree.exp_desc = (Typedtree.TStringExp " ");
-                      exp_type = string };
-                     { Typedtree.exp_desc =
-                       Typedtree.TCallExp {func = (12, "do_nothing1");
-                         args =
-                         [{ Typedtree.exp_desc =
-                            (Typedtree.TVarExp
-                               { Typedtree.var_desc =
-                                 (Typedtree.TSimpleVar (16, "d"));
-                                 var_type = int });
-                            exp_type = int };
-                           { Typedtree.exp_desc = (Typedtree.TStringExp "str");
-                             exp_type = string }
-                           ]};
-                       exp_type = int }
+                   [{ Typedtree.exp_desc =
+                      Typedtree.TCallExp {func = (12, "do_nothing1");
+                        args =
+                        [{ Typedtree.exp_desc =
+                           (Typedtree.TVarExp
+                              { Typedtree.var_desc =
+                                (Typedtree.TSimpleVar (16, "d"));
+                                var_type = int });
+                           exp_type = int };
+                          { Typedtree.exp_desc = (Typedtree.TStringExp "str");
+                            exp_type = string }
+                          ]};
+                      exp_type = int };
+                     { Typedtree.exp_desc = (Typedtree.TStringExp " ");
+                       exp_type = string }
                      ]);
                 exp_type = string }
               }

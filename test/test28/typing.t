@@ -10,5 +10,5 @@
   	rec1
   end
   $ Tiger -dtypedtree ./code.tig 
-  message: Types must be equal {(name : String); (id : int);} =/= (Name  rectype1)
+  message: Types must be equal {(name : String); (id : int);} =/= {(name : String); (id : int);}
   error: Type mismatch

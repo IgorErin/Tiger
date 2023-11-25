@@ -217,101 +217,8 @@
                   { Typedtree.exp_desc =
                     (Typedtree.TSeqExp
                        [{ Typedtree.exp_desc =
-                          (Typedtree.TVarExp
-                             { Typedtree.var_desc =
-                               (Typedtree.TSimpleVar (15, "i")); var_type = int
-                               });
-                          exp_type = int };
-                         { Typedtree.exp_desc =
-                           Typedtree.TWhileExp {
-                             test =
-                             { Typedtree.exp_desc =
-                               Typedtree.TCallExp {func = (16, "isdigit");
-                                 args =
-                                 [{ Typedtree.exp_desc =
-                                    (Typedtree.TVarExp
-                                       { Typedtree.var_desc =
-                                         (Typedtree.TSimpleVar (13, "buffer"));
-                                         var_type = string });
-                                    exp_type = string }
-                                   ]};
-                               exp_type = int };
-                             body =
-                             { Typedtree.exp_desc =
-                               (Typedtree.TSeqExp
-                                  [{ Typedtree.exp_desc =
-                                     Typedtree.TAssignExp {
-                                       var =
-                                       { Typedtree.var_desc =
-                                         (Typedtree.TSimpleVar (13, "buffer"));
-                                         var_type = string };
-                                       exp =
-                                       { Typedtree.exp_desc =
-                                         Typedtree.TCallExp {
-                                           func = (2, "getchar"); args = []};
-                                         exp_type = string }};
-                                     exp_type = unit };
-                                    { Typedtree.exp_desc =
-                                      Typedtree.TAssignExp {
-                                        var =
-                                        { Typedtree.var_desc =
-                                          (Typedtree.TSimpleVar (15, "i"));
-                                          var_type = int };
-                                        exp =
-                                        { Typedtree.exp_desc =
-                                          Typedtree.TOpExp {
-                                            left =
-                                            { Typedtree.exp_desc =
-                                              Typedtree.TOpExp {
-                                                left =
-                                                { Typedtree.exp_desc =
-                                                  Typedtree.TOpExp {
-                                                    left =
-                                                    { Typedtree.exp_desc =
-                                                      (Typedtree.TVarExp
-                                                         { Typedtree.var_desc =
-                                                           (Typedtree.TSimpleVar
-                                                              (15, "i"));
-                                                           var_type = int });
-                                                      exp_type = int };
-                                                    oper = `TimesOp;
-                                                    right =
-                                                    { Typedtree.exp_desc =
-                                                      (Typedtree.TIntExp 10);
-                                                      exp_type = int }};
-                                                  exp_type = int };
-                                                oper = `PlusOp;
-                                                right =
-                                                { Typedtree.exp_desc =
-                                                  Typedtree.TCallExp {
-                                                    func = (3, "ord");
-                                                    args =
-                                                    [{ Typedtree.exp_desc =
-                                                       (Typedtree.TVarExp
-                                                          { Typedtree.var_desc =
-                                                            (Typedtree.TSimpleVar
-                                                               (13, "buffer"));
-                                                            var_type = string });
-                                                       exp_type = string }
-                                                      ]};
-                                                  exp_type = int }};
-                                              exp_type = int };
-                                            oper = `MinusOp;
-                                            right =
-                                            { Typedtree.exp_desc =
-                                              Typedtree.TCallExp {
-                                                func = (3, "ord");
-                                                args =
-                                                [{ Typedtree.exp_desc =
-                                                   (Typedtree.TStringExp "0");
-                                                   exp_type = string }
-                                                  ]};
-                                              exp_type = int }};
-                                          exp_type = int }};
-                                      exp_type = unit }
-                                    ]);
-                               exp_type = unit }};
-                           exp_type = unit };
+                          Typedtree.TCallExp {func = (18, "skipto"); args = []};
+                          exp_type = unit };
                          { Typedtree.exp_desc =
                            Typedtree.TAssignExp {
                              var =
@@ -336,8 +243,101 @@
                                exp_type = int }};
                            exp_type = unit };
                          { Typedtree.exp_desc =
-                           Typedtree.TCallExp {func = (18, "skipto"); args = []};
-                           exp_type = unit }
+                           Typedtree.TWhileExp {
+                             test =
+                             { Typedtree.exp_desc =
+                               Typedtree.TCallExp {func = (16, "isdigit");
+                                 args =
+                                 [{ Typedtree.exp_desc =
+                                    (Typedtree.TVarExp
+                                       { Typedtree.var_desc =
+                                         (Typedtree.TSimpleVar (13, "buffer"));
+                                         var_type = string });
+                                    exp_type = string }
+                                   ]};
+                               exp_type = int };
+                             body =
+                             { Typedtree.exp_desc =
+                               (Typedtree.TSeqExp
+                                  [{ Typedtree.exp_desc =
+                                     Typedtree.TAssignExp {
+                                       var =
+                                       { Typedtree.var_desc =
+                                         (Typedtree.TSimpleVar (15, "i"));
+                                         var_type = int };
+                                       exp =
+                                       { Typedtree.exp_desc =
+                                         Typedtree.TOpExp {
+                                           left =
+                                           { Typedtree.exp_desc =
+                                             Typedtree.TOpExp {
+                                               left =
+                                               { Typedtree.exp_desc =
+                                                 Typedtree.TOpExp {
+                                                   left =
+                                                   { Typedtree.exp_desc =
+                                                     (Typedtree.TVarExp
+                                                        { Typedtree.var_desc =
+                                                          (Typedtree.TSimpleVar
+                                                             (15, "i"));
+                                                          var_type = int });
+                                                     exp_type = int };
+                                                   oper = `TimesOp;
+                                                   right =
+                                                   { Typedtree.exp_desc =
+                                                     (Typedtree.TIntExp 10);
+                                                     exp_type = int }};
+                                                 exp_type = int };
+                                               oper = `PlusOp;
+                                               right =
+                                               { Typedtree.exp_desc =
+                                                 Typedtree.TCallExp {
+                                                   func = (3, "ord");
+                                                   args =
+                                                   [{ Typedtree.exp_desc =
+                                                      (Typedtree.TVarExp
+                                                         { Typedtree.var_desc =
+                                                           (Typedtree.TSimpleVar
+                                                              (13, "buffer"));
+                                                           var_type = string });
+                                                      exp_type = string }
+                                                     ]};
+                                                 exp_type = int }};
+                                             exp_type = int };
+                                           oper = `MinusOp;
+                                           right =
+                                           { Typedtree.exp_desc =
+                                             Typedtree.TCallExp {
+                                               func = (3, "ord");
+                                               args =
+                                               [{ Typedtree.exp_desc =
+                                                  (Typedtree.TStringExp "0");
+                                                  exp_type = string }
+                                                 ]};
+                                             exp_type = int }};
+                                         exp_type = int }};
+                                     exp_type = unit };
+                                    { Typedtree.exp_desc =
+                                      Typedtree.TAssignExp {
+                                        var =
+                                        { Typedtree.var_desc =
+                                          (Typedtree.TSimpleVar (13, "buffer"));
+                                          var_type = string };
+                                        exp =
+                                        { Typedtree.exp_desc =
+                                          Typedtree.TCallExp {
+                                            func = (2, "getchar"); args = []};
+                                          exp_type = string }};
+                                      exp_type = unit }
+                                    ]);
+                               exp_type = unit }};
+                           exp_type = unit };
+                         { Typedtree.exp_desc =
+                           (Typedtree.TVarExp
+                              { Typedtree.var_desc =
+                                (Typedtree.TSimpleVar (15, "i"));
+                                var_type = int });
+                           exp_type = int }
                          ]);
                     exp_type = int }};
                 exp_type = int }
@@ -683,95 +683,95 @@
                               { Typedtree.exp_desc =
                                 (Typedtree.TSeqExp
                                    [{ Typedtree.exp_desc =
-                                      Typedtree.TCallExp {func = (0, "print");
+                                      Typedtree.TCallExp {func = (30, "f");
                                         args =
                                         [{ Typedtree.exp_desc =
-                                           Typedtree.TCallExp {
-                                             func = (4, "chr");
-                                             args =
-                                             [{ Typedtree.exp_desc =
-                                                Typedtree.TOpExp {
-                                                  left =
-                                                  { Typedtree.exp_desc =
-                                                    (Typedtree.TVarExp
-                                                       { Typedtree.var_desc =
-                                                         (Typedtree.TSimpleVar
-                                                            (15, "i"));
-                                                         var_type = int });
-                                                    exp_type = int };
-                                                  oper = `MinusOp;
-                                                  right =
-                                                  { Typedtree.exp_desc =
-                                                    Typedtree.TOpExp {
-                                                      left =
-                                                      { Typedtree.exp_desc =
-                                                        Typedtree.TOpExp {
-                                                          left =
-                                                          { Typedtree.exp_desc =
-                                                            (Typedtree.TVarExp
-                                                               { Typedtree.var_desc =
-                                                                 (Typedtree.TSimpleVar
-                                                                    (15, "i"));
-                                                                 var_type = int
-                                                                 });
-                                                            exp_type = int };
-                                                          oper = `DivideOp;
-                                                          right =
-                                                          { Typedtree.exp_desc =
-                                                            Typedtree.TOpExp {
-                                                              left =
-                                                              { Typedtree.exp_desc =
-                                                                (Typedtree.TIntExp
-                                                                   10);
-                                                                exp_type = int
-                                                                };
-                                                              oper = `TimesOp;
-                                                              right =
-                                                              { Typedtree.exp_desc =
-                                                                (Typedtree.TIntExp
-                                                                   10);
-                                                                exp_type = int
-                                                                }};
-                                                            exp_type = int }};
-                                                        exp_type = int };
-                                                      oper = `PlusOp;
-                                                      right =
-                                                      { Typedtree.exp_desc =
-                                                        Typedtree.TCallExp {
-                                                          func = (3, "ord");
-                                                          args =
-                                                          [{ Typedtree.exp_desc =
-                                                             (Typedtree.TStringExp
-                                                                "0");
-                                                             exp_type = string
-                                                             }
-                                                            ]};
-                                                        exp_type = int }};
-                                                    exp_type = int }};
-                                                exp_type = int }
-                                               ]};
-                                           exp_type = string }
+                                           Typedtree.TOpExp {
+                                             left =
+                                             { Typedtree.exp_desc =
+                                               (Typedtree.TVarExp
+                                                  { Typedtree.var_desc =
+                                                    (Typedtree.TSimpleVar
+                                                       (15, "i"));
+                                                    var_type = int });
+                                               exp_type = int };
+                                             oper = `DivideOp;
+                                             right =
+                                             { Typedtree.exp_desc =
+                                               (Typedtree.TIntExp 10);
+                                               exp_type = int }};
+                                           exp_type = int }
                                           ]};
                                       exp_type = unit };
                                      { Typedtree.exp_desc =
-                                       Typedtree.TCallExp {func = (30, "f");
+                                       Typedtree.TCallExp {func = (0, "print");
                                          args =
                                          [{ Typedtree.exp_desc =
-                                            Typedtree.TOpExp {
-                                              left =
-                                              { Typedtree.exp_desc =
-                                                (Typedtree.TVarExp
-                                                   { Typedtree.var_desc =
-                                                     (Typedtree.TSimpleVar
-                                                        (15, "i"));
-                                                     var_type = int });
-                                                exp_type = int };
-                                              oper = `DivideOp;
-                                              right =
-                                              { Typedtree.exp_desc =
-                                                (Typedtree.TIntExp 10);
-                                                exp_type = int }};
-                                            exp_type = int }
+                                            Typedtree.TCallExp {
+                                              func = (4, "chr");
+                                              args =
+                                              [{ Typedtree.exp_desc =
+                                                 Typedtree.TOpExp {
+                                                   left =
+                                                   { Typedtree.exp_desc =
+                                                     (Typedtree.TVarExp
+                                                        { Typedtree.var_desc =
+                                                          (Typedtree.TSimpleVar
+                                                             (15, "i"));
+                                                          var_type = int });
+                                                     exp_type = int };
+                                                   oper = `MinusOp;
+                                                   right =
+                                                   { Typedtree.exp_desc =
+                                                     Typedtree.TOpExp {
+                                                       left =
+                                                       { Typedtree.exp_desc =
+                                                         Typedtree.TOpExp {
+                                                           left =
+                                                           { Typedtree.exp_desc =
+                                                             (Typedtree.TVarExp
+                                                                { Typedtree.var_desc =
+                                                                  (Typedtree.TSimpleVar
+                                                                     (15, "i"));
+                                                                  var_type =
+                                                                  int });
+                                                             exp_type = int };
+                                                           oper = `DivideOp;
+                                                           right =
+                                                           { Typedtree.exp_desc =
+                                                             Typedtree.TOpExp {
+                                                               left =
+                                                               { Typedtree.exp_desc =
+                                                                 (Typedtree.TIntExp
+                                                                    10);
+                                                                 exp_type = int
+                                                                 };
+                                                               oper = `TimesOp;
+                                                               right =
+                                                               { Typedtree.exp_desc =
+                                                                 (Typedtree.TIntExp
+                                                                    10);
+                                                                 exp_type = int
+                                                                 }};
+                                                             exp_type = int }};
+                                                         exp_type = int };
+                                                       oper = `PlusOp;
+                                                       right =
+                                                       { Typedtree.exp_desc =
+                                                         Typedtree.TCallExp {
+                                                           func = (3, "ord");
+                                                           args =
+                                                           [{ Typedtree.exp_desc =
+                                                              (Typedtree.TStringExp
+                                                                 "0");
+                                                              exp_type = string
+                                                              }
+                                                             ]};
+                                                         exp_type = int }};
+                                                     exp_type = int }};
+                                                 exp_type = int }
+                                                ]};
+                                            exp_type = string }
                                            ]};
                                        exp_type = unit }
                                      ]);
@@ -803,30 +803,31 @@
                        { Typedtree.exp_desc =
                          (Typedtree.TSeqExp
                             [{ Typedtree.exp_desc =
-                               Typedtree.TCallExp {func = (30, "f");
+                               Typedtree.TCallExp {func = (0, "print");
                                  args =
                                  [{ Typedtree.exp_desc =
-                                    Typedtree.TOpExp {
-                                      left =
-                                      { Typedtree.exp_desc =
-                                        (Typedtree.TIntExp 0); exp_type = int };
-                                      oper = `MinusOp;
-                                      right =
-                                      { Typedtree.exp_desc =
-                                        (Typedtree.TVarExp
-                                           { Typedtree.var_desc =
-                                             (Typedtree.TSimpleVar (15, "i"));
-                                             var_type = int });
-                                        exp_type = int }};
-                                    exp_type = int }
+                                    (Typedtree.TStringExp "-");
+                                    exp_type = string }
                                    ]};
                                exp_type = unit };
                               { Typedtree.exp_desc =
-                                Typedtree.TCallExp {func = (0, "print");
+                                Typedtree.TCallExp {func = (30, "f");
                                   args =
                                   [{ Typedtree.exp_desc =
-                                     (Typedtree.TStringExp "-");
-                                     exp_type = string }
+                                     Typedtree.TOpExp {
+                                       left =
+                                       { Typedtree.exp_desc =
+                                         (Typedtree.TIntExp 0); exp_type = int
+                                         };
+                                       oper = `MinusOp;
+                                       right =
+                                       { Typedtree.exp_desc =
+                                         (Typedtree.TVarExp
+                                            { Typedtree.var_desc =
+                                              (Typedtree.TSimpleVar (15, "i"));
+                                              var_type = int });
+                                         exp_type = int }};
+                                     exp_type = int }
                                     ]};
                                 exp_type = unit }
                               ]);
@@ -911,7 +912,7 @@
                    (Some { Typedtree.exp_desc =
                            (Typedtree.TSeqExp
                               [{ Typedtree.exp_desc =
-                                 Typedtree.TCallExp {func = (31, "printlist");
+                                 Typedtree.TCallExp {func = (29, "printint");
                                    args =
                                    [{ Typedtree.exp_desc =
                                       (Typedtree.TVarExp
@@ -922,12 +923,9 @@
                                                 var_type =
                                                 {(first : int)(rest : (Name  list))}
                                                 },
-                                              1));
-                                           var_type =
-                                           {(first : int)(rest : (Name  list))}
-                                           });
-                                      exp_type =
-                                      {(first : int)(rest : (Name  list))} }
+                                              0));
+                                           var_type = int });
+                                      exp_type = int }
                                      ]};
                                  exp_type = unit };
                                 { Typedtree.exp_desc =
@@ -939,7 +937,7 @@
                                       ]};
                                   exp_type = unit };
                                 { Typedtree.exp_desc =
-                                  Typedtree.TCallExp {func = (29, "printint");
+                                  Typedtree.TCallExp {func = (31, "printlist");
                                     args =
                                     [{ Typedtree.exp_desc =
                                        (Typedtree.TVarExp
@@ -951,9 +949,12 @@
                                                  var_type =
                                                  {(first : int)(rest : (Name  list))}
                                                  },
-                                               0));
-                                            var_type = int });
-                                       exp_type = int }
+                                               1));
+                                            var_type =
+                                            {(first : int)(rest : (Name  list))}
+                                            });
+                                       exp_type =
+                                       {(first : int)(rest : (Name  list))} }
                                       ]};
                                   exp_type = unit }
                                 ]);
@@ -973,19 +974,19 @@
           { Typedtree.exp_desc =
             (Typedtree.TSeqExp
                [{ Typedtree.exp_desc =
-                  Typedtree.TCallExp {func = (23, "readlist"); args = []};
-                  exp_type = {(first : int)(rest : (Name  list))} };
+                  Typedtree.TAssignExp {
+                    var =
+                    { Typedtree.var_desc =
+                      (Typedtree.TSimpleVar (13, "buffer")); var_type = string
+                      };
+                    exp =
+                    { Typedtree.exp_desc =
+                      Typedtree.TCallExp {func = (2, "getchar"); args = []};
+                      exp_type = string }};
+                  exp_type = unit };
                  { Typedtree.exp_desc =
-                   Typedtree.TAssignExp {
-                     var =
-                     { Typedtree.var_desc =
-                       (Typedtree.TSimpleVar (13, "buffer")); var_type = string
-                       };
-                     exp =
-                     { Typedtree.exp_desc =
-                       Typedtree.TCallExp {func = (2, "getchar"); args = []};
-                       exp_type = string }};
-                   exp_type = unit }
+                   Typedtree.TCallExp {func = (23, "readlist"); args = []};
+                   exp_type = {(first : int)(rest : (Name  list))} }
                  ]);
             exp_type = {(first : int)(rest : (Name  list))} }}
         ];

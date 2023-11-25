@@ -21,29 +21,29 @@
           body =
           { Typedtree.exp_desc =
             (Typedtree.TSeqExp
-               [{ Typedtree.exp_desc = (Typedtree.TSeqExp []); exp_type = unit
-                  };
-                 { Typedtree.exp_desc =
-                   Typedtree.TAssignExp {
-                     var =
-                     { Typedtree.var_desc = (Typedtree.TSimpleVar (12, "a"));
-                       var_type = int };
-                     exp =
-                     { Typedtree.exp_desc =
-                       Typedtree.TOpExp {
-                         left =
-                         { Typedtree.exp_desc =
-                           (Typedtree.TVarExp
-                              { Typedtree.var_desc =
-                                (Typedtree.TSimpleVar (12, "a"));
-                                var_type = int });
-                           exp_type = int };
-                         oper = `PlusOp;
-                         right =
-                         { Typedtree.exp_desc = (Typedtree.TIntExp 1);
-                           exp_type = int }};
-                       exp_type = int }};
-                   exp_type = unit }
+               [{ Typedtree.exp_desc =
+                  Typedtree.TAssignExp {
+                    var =
+                    { Typedtree.var_desc = (Typedtree.TSimpleVar (12, "a"));
+                      var_type = int };
+                    exp =
+                    { Typedtree.exp_desc =
+                      Typedtree.TOpExp {
+                        left =
+                        { Typedtree.exp_desc =
+                          (Typedtree.TVarExp
+                             { Typedtree.var_desc =
+                               (Typedtree.TSimpleVar (12, "a")); var_type = int
+                               });
+                          exp_type = int };
+                        oper = `PlusOp;
+                        right =
+                        { Typedtree.exp_desc = (Typedtree.TIntExp 1);
+                          exp_type = int }};
+                      exp_type = int }};
+                  exp_type = unit };
+                 { Typedtree.exp_desc = (Typedtree.TSeqExp []); exp_type = unit
+                   }
                  ]);
             exp_type = unit }};
         exp_type = unit }};

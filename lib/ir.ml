@@ -12,7 +12,7 @@ and stm =
   | Exp of exp
   | Jump of exp * Temp.label list
   | CJump of relop * exp * exp * Temp.label * Temp.label
-  | Seq of stm * stm
+  | Seq of stm list
   | Label of Temp.label
 
 and binop =
@@ -38,6 +38,7 @@ and relop =
   | ULE
   | UGT
   | UGE
+[@@deriving show]
 
 let false_ = Const 0
 let true_ = Const 1
@@ -56,13 +57,8 @@ let binop fst op snd = BinOp (op, fst, snd)
 let mem e = Mem e
 let call n args = Call (n, args)
 
-(*TODO*)
-let call_out_of_bound = Call (false_, [])
-let call_null_reference = Call (false_, [])
-
 let seq ls =
-  let ls = List.rev ls in
   match ls with
-  | [] -> failwith "Empty seq"
-  | hd :: tl -> List.fold_right (fun next acc -> Seq (next, acc)) tl hd
+  | [] -> exp unit
+  | _ :: _ -> Seq ls
 ;;

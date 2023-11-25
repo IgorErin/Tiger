@@ -147,21 +147,14 @@
                 var =
                 { Typedtree.var_desc =
                   (Typedtree.TSubscriptVar (
-                     { Typedtree.var_desc =
-                       (Typedtree.TFieldVar (
-                          { Typedtree.var_desc =
-                            (Typedtree.TSimpleVar (26, "rec2"));
-                            var_type =
-                            {(name : string)(dates : (Name  arrtype1))} },
-                          1));
+                     { Typedtree.var_desc = (Typedtree.TSimpleVar (22, "arr1"));
                        var_type = array of int },
-                     { Typedtree.exp_desc = (Typedtree.TIntExp 2);
+                     { Typedtree.exp_desc = (Typedtree.TIntExp 0);
                        exp_type = int }
                      ));
                   var_type = int };
                 exp =
-                { Typedtree.exp_desc = (Typedtree.TIntExp 2323); exp_type = int
-                  }};
+                { Typedtree.exp_desc = (Typedtree.TIntExp 1); exp_type = int }};
               exp_type = unit };
              { Typedtree.exp_desc =
                Typedtree.TAssignExp {
@@ -169,20 +162,14 @@
                  { Typedtree.var_desc =
                    (Typedtree.TSubscriptVar (
                       { Typedtree.var_desc =
-                        (Typedtree.TFieldVar (
-                           { Typedtree.var_desc =
-                             (Typedtree.TSimpleVar (26, "rec2"));
-                             var_type =
-                             {(name : string)(dates : (Name  arrtype1))} },
-                           1));
+                        (Typedtree.TSimpleVar (22, "arr1"));
                         var_type = array of int },
-                      { Typedtree.exp_desc = (Typedtree.TIntExp 0);
+                      { Typedtree.exp_desc = (Typedtree.TIntExp 9);
                         exp_type = int }
                       ));
                    var_type = int };
                  exp =
-                 { Typedtree.exp_desc = (Typedtree.TIntExp 2323);
-                   exp_type = int }};
+                 { Typedtree.exp_desc = (Typedtree.TIntExp 3); exp_type = int }};
                exp_type = unit };
              { Typedtree.exp_desc =
                Typedtree.TAssignExp {
@@ -190,30 +177,18 @@
                  { Typedtree.var_desc =
                    (Typedtree.TFieldVar (
                       { Typedtree.var_desc =
-                        (Typedtree.TSimpleVar (25, "rec1"));
-                        var_type =
-                        {(name : string)(address : string)(id : int)(age : int)}
-                        },
+                        (Typedtree.TSubscriptVar (
+                           { Typedtree.var_desc =
+                             (Typedtree.TSimpleVar (23, "arr2"));
+                             var_type = array of (Name  rectype1) },
+                           { Typedtree.exp_desc = (Typedtree.TIntExp 3);
+                             exp_type = int }
+                           ));
+                        var_type = (Name  rectype1) },
                       0));
                    var_type = string };
                  exp =
-                 { Typedtree.exp_desc = (Typedtree.TStringExp "sdf");
-                   exp_type = string }};
-               exp_type = unit };
-             { Typedtree.exp_desc =
-               Typedtree.TAssignExp {
-                 var =
-                 { Typedtree.var_desc =
-                   (Typedtree.TSubscriptVar (
-                      { Typedtree.var_desc =
-                        (Typedtree.TSimpleVar (24, "arr3"));
-                        var_type = array of string },
-                      { Typedtree.exp_desc = (Typedtree.TIntExp 34);
-                        exp_type = int }
-                      ));
-                   var_type = string };
-                 exp =
-                 { Typedtree.exp_desc = (Typedtree.TStringExp "sfd");
+                 { Typedtree.exp_desc = (Typedtree.TStringExp "kati");
                    exp_type = string }};
                exp_type = unit };
              { Typedtree.exp_desc =
@@ -240,20 +215,32 @@
                Typedtree.TAssignExp {
                  var =
                  { Typedtree.var_desc =
+                   (Typedtree.TSubscriptVar (
+                      { Typedtree.var_desc =
+                        (Typedtree.TSimpleVar (24, "arr3"));
+                        var_type = array of string },
+                      { Typedtree.exp_desc = (Typedtree.TIntExp 34);
+                        exp_type = int }
+                      ));
+                   var_type = string };
+                 exp =
+                 { Typedtree.exp_desc = (Typedtree.TStringExp "sfd");
+                   exp_type = string }};
+               exp_type = unit };
+             { Typedtree.exp_desc =
+               Typedtree.TAssignExp {
+                 var =
+                 { Typedtree.var_desc =
                    (Typedtree.TFieldVar (
                       { Typedtree.var_desc =
-                        (Typedtree.TSubscriptVar (
-                           { Typedtree.var_desc =
-                             (Typedtree.TSimpleVar (23, "arr2"));
-                             var_type = array of (Name  rectype1) },
-                           { Typedtree.exp_desc = (Typedtree.TIntExp 3);
-                             exp_type = int }
-                           ));
-                        var_type = (Name  rectype1) },
+                        (Typedtree.TSimpleVar (25, "rec1"));
+                        var_type =
+                        {(name : string)(address : string)(id : int)(age : int)}
+                        },
                       0));
                    var_type = string };
                  exp =
-                 { Typedtree.exp_desc = (Typedtree.TStringExp "kati");
+                 { Typedtree.exp_desc = (Typedtree.TStringExp "sdf");
                    exp_type = string }};
                exp_type = unit };
              { Typedtree.exp_desc =
@@ -262,14 +249,20 @@
                  { Typedtree.var_desc =
                    (Typedtree.TSubscriptVar (
                       { Typedtree.var_desc =
-                        (Typedtree.TSimpleVar (22, "arr1"));
+                        (Typedtree.TFieldVar (
+                           { Typedtree.var_desc =
+                             (Typedtree.TSimpleVar (26, "rec2"));
+                             var_type =
+                             {(name : string)(dates : (Name  arrtype1))} },
+                           1));
                         var_type = array of int },
-                      { Typedtree.exp_desc = (Typedtree.TIntExp 9);
+                      { Typedtree.exp_desc = (Typedtree.TIntExp 0);
                         exp_type = int }
                       ));
                    var_type = int };
                  exp =
-                 { Typedtree.exp_desc = (Typedtree.TIntExp 3); exp_type = int }};
+                 { Typedtree.exp_desc = (Typedtree.TIntExp 2323);
+                   exp_type = int }};
                exp_type = unit };
              { Typedtree.exp_desc =
                Typedtree.TAssignExp {
@@ -277,14 +270,20 @@
                  { Typedtree.var_desc =
                    (Typedtree.TSubscriptVar (
                       { Typedtree.var_desc =
-                        (Typedtree.TSimpleVar (22, "arr1"));
+                        (Typedtree.TFieldVar (
+                           { Typedtree.var_desc =
+                             (Typedtree.TSimpleVar (26, "rec2"));
+                             var_type =
+                             {(name : string)(dates : (Name  arrtype1))} },
+                           1));
                         var_type = array of int },
-                      { Typedtree.exp_desc = (Typedtree.TIntExp 0);
+                      { Typedtree.exp_desc = (Typedtree.TIntExp 2);
                         exp_type = int }
                       ));
                    var_type = int };
                  exp =
-                 { Typedtree.exp_desc = (Typedtree.TIntExp 1); exp_type = int }};
+                 { Typedtree.exp_desc = (Typedtree.TIntExp 2323);
+                   exp_type = int }};
                exp_type = unit }
              ]);
         exp_type = unit }};

@@ -10,5 +10,5 @@
   	arr1
   end
   $ Tiger -dtypedtree ./code.tig 
-  message: Types must be equal array of int =/= (Name  arrtype1)
+  message: Types must be equal array of int =/= array of int
   error: Type mismatch

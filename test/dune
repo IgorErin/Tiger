@@ -1,2 +1,3 @@
-(cram 
+(cram
+ (deps ../bin/main.exe)
  (package Tiger))

@@ -1,7 +1,5 @@
-type exp = unit
-
 module Level : sig
-  type t
+  type t [@@deriving show]
 
   val outer_most : t
   val new_level : prev:t -> label:Temp.label -> formals:bool list -> t
@@ -11,16 +9,24 @@ module Level : sig
   val common_level_exn : t -> t -> t
   val get_static_link : t -> Frame.access
   val label_exn : t -> Temp.label
+  val prev_or_bound : src:t -> bound:t -> t
 end = struct
   type t =
-    | Outer
+    | Outer of
+        { uneque : unit ref
+        ; frame : Frame.t
+        }
     | Regular of
         { prev : t
         ; uneque : unit ref
         ; frame : Frame.t
         }
+  [@@deriving show]
 
-  let outer_most = Outer
+  let outer_most =
+    let frame = Frame.new_frame ~label:(Temp.new_labeln "global") ~formals:[] in
+    Outer { uneque = ref (); frame }
+  ;;
 
   let new_level ~prev ~label ~formals =
     let formals = true :: formals in
@@ -31,23 +37,28 @@ end = struct
   let outer_encounter () = failwith "Outer frame encounter"
 
   let frame = function
-    | Outer -> outer_encounter ()
+    | Outer { frame; _ } -> frame
     | Regular { frame; _ } -> frame
   ;;
 
   let uneque = function
-    | Outer -> outer_encounter ()
+    | Outer { uneque; _ } -> uneque
     | Regular { uneque; _ } -> uneque
   ;;
 
   let prev_exn = function
-    | Outer -> outer_encounter ()
+    | Outer _ -> outer_encounter ()
     | Regular { prev; _ } -> prev
   ;;
 
   let prev_opt = function
-    | Outer -> None
+    | Outer _ -> None
     | Regular { prev; _ } -> Some prev
+  ;;
+
+  let is_outer = function
+    | Outer _ -> true
+    | Regular _ -> false
   ;;
 
   let equal fst snd = Base.phys_equal (uneque fst) (uneque snd)
@@ -61,24 +72,35 @@ end = struct
       in
       loop [] level
     in
+    let find_first_common fst snd =
+      List.find_opt (fun lv -> List.exists (equal lv) snd) fst
+    in
     let fst_chain = get_chain fst in
     let snd_chain = get_chain snd in
-    List.combine fst_chain snd_chain
-    |> List.find_opt (fun (fst, snd) -> equal fst snd)
+    find_first_common fst_chain snd_chain
     |> Core.Option.value_or_thunk ~default:(fun () ->
       failwith "Common enclosed level not found")
-    |> Base.fst
   ;;
 
   let get_static_link level =
+    if is_outer level then failwith "Try to get static link on outer lvl";
     let frame = frame level in
     let formals = Frame.formals frame in
-    List.hd formals
+    Core.List.hd formals
+    |> Core.Option.value_or_thunk ~default:(fun () ->
+      failwith "Failed to get static link")
   ;;
 
   let label_exn = function
     | Regular { frame; _ } -> Frame.label frame
-    | Outer -> failwith "Oter has no label"
+    | Outer _ -> failwith "Oter has no label"
+  ;;
+
+  let prev_or_bound ~src ~bound =
+    let rec loop prev current =
+      if equal current bound then prev else loop current (prev_exn current)
+    in
+    if equal src bound then src else loop src (prev_exn src)
   ;;
 end
 
@@ -99,6 +121,14 @@ end = struct
   let level { level; _ } = level
 end
 
+let formals lvl =
+  Level.frame lvl
+  |> Frame.formals
+  |> Core.List.tl
+  |> Core.Option.value_or_thunk ~default:(fun () -> failwith "Empty frame formals.")
+  |> List.map (fun faccess -> Access.create ~level:lvl ~access:faccess)
+;;
+
 let alloc_local level =
   let frame = Level.frame level in
   let access = Frame.alloc_local ~frame in
@@ -110,7 +140,7 @@ let fp = Ir.temp Frame.fp
 (* -----------------------------------------------------------*)
 
 module Exp : sig
-  type t
+  type t [@@deriving show]
 
   val ex : Ir.exp -> t
   val nx : Ir.stm -> t
@@ -123,6 +153,7 @@ end = struct
     | Ex of Ir.exp
     | Nx of Ir.stm
     | Cx of (Temp.label -> Temp.label -> Ir.stm)
+  [@@deriving show]
 
   let to_exp =
     let open Ir in
@@ -194,6 +225,8 @@ module Common = struct
     Ir.(Frame.call_external ~name:"malloc" ~args:[ const count ])
   ;;
 
+  let call_null_ref e = Frame.call_external ~name:"null_ref" ~args:[ e ]
+  let out_of_bound = Frame.call_external ~name:"out_of_bound" ~args:[]
   let is_true ~value ~t ~f = Ir.(cjump EQ value true_ t f)
   let inc ~e = Ir.(move e (binop e Plus one))
 end
@@ -203,7 +236,8 @@ let null_check value =
   let f = Temp.new_label () in
   Ir.(
     eseq
-      (seq [ cjump EQ value null f t; label f; exp @@ call_null_reference; label t ])
+      (seq
+         [ cjump EQ value null f t; label f; exp @@ Common.call_null_ref value; label t ])
       value)
 ;;
 
@@ -241,11 +275,11 @@ module Array = struct
     Ir.(
       eseq
         (seq
-           [ cjump GT index (const 0) z f
+           [ cjump GE index (const 0) z f
            ; label z
            ; cjump LT index length t f
            ; label f
-           ; exp @@ call_out_of_bound
+           ; exp @@ Common.out_of_bound
            ; label t
            ])
         result)
@@ -254,7 +288,7 @@ module Array = struct
   let get ~array_exp ~index_exp =
     let offset =
       let one = Common.offset_of_int ~number:1 in
-      Ir.(binop index_exp Plus one)
+      Ir.(binop index_exp Mul one)
     in
     Ir.(mem @@ binop array_exp Plus offset)
   ;;
@@ -282,19 +316,37 @@ let int c = c |> Ir.const |> Exp.ex
 let assign ~name ~exp = Ir.move name exp |> Exp.nx
 let unit = Ir.unit |> Ir.exp
 
-let seq seq =
-  seq
-  |> Core.List.reduce ~f:(fun acc next -> Ir.(eseq (exp acc) @@ next))
-  |> Option.value ~default:Ir.unit
-  |> Exp.ex
+let seq ~seq ~type_ =
+  if Types.is_unit type_
+  then seq |> List.map Exp.to_stm |> Ir.seq |> Exp.nx
+  else (
+    let seq = List.rev seq in
+    match seq with
+    | hd :: tl ->
+      let hd = Exp.to_exp hd in
+      let tl = List.map Exp.to_stm tl |> Ir.seq in
+      Ir.eseq tl hd |> Exp.ex
+    | [] -> Ir.unit |> Exp.ex (* unreachable, but ...*))
 ;;
 
 let if_else ~test ~then_ ~else_ =
-  let t = Temp.new_label () in
-  let f = Temp.new_label () in
+  let tl = Temp.new_label () in
+  let fl = Temp.new_label () in
+  let dl = Temp.new_label () in
   let result = Ir.name @@ Temp.new_temp () in
+  let jump_to_done = Ir.(jump ~e:(name dl) ~ls:[ dl ]) in
   Ir.(
-    eseq (seq [ move result then_; test t f; label f; move result else_; label t ]) result)
+    eseq
+      (seq
+         [ test tl fl
+         ; label tl
+         ; move result then_
+         ; jump_to_done
+         ; label fl
+         ; move result else_
+         ; label dl
+         ])
+      result)
   |> Exp.ex
 ;;
 
@@ -339,7 +391,7 @@ module Record = struct
         Ir.(seq [ acc; current ]))
       source
       values
-    |> Exp.nx
+    |> fun x -> Ir.(eseq x t) |> Exp.ex
   ;;
 end
 
@@ -380,12 +432,14 @@ let for_ ~lb ~hb ~body ~dl =
       ; label bl
       ; body
       ; cjump LT ct hb sl dl
+      ; label dl
       ])
   |> Exp.nx
 ;;
 
 let fcall ~fl ~cl ~args ~t =
-  let dl = Level.common_level_exn fl cl in
+  let common = Level.common_level_exn fl cl in
+  let dl = Level.prev_or_bound ~src:cl ~bound:common in
   let step acc lv =
     let sl = Level.get_static_link lv in
     Frame.exp ~acc:sl ~fp:acc
@@ -412,4 +466,10 @@ let fun_ ~level ~body =
 let let_in ~inits ~body =
   let stms = inits @ [ body ] |> List.map Exp.to_stm in
   Ir.seq stms |> Exp.nx
+;;
+
+let var_dec ~access ~level ~init =
+  let var = simple_var ~access ~level |> Exp.to_exp in
+  let init = Exp.to_exp init in
+  Ir.move var init |> Exp.nx
 ;;

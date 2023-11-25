@@ -1,0 +1,7 @@
+let
+	type arrtype1 = array of int
+
+	var arr1: arrtype1 := nil
+in
+	arr1[0]
+end

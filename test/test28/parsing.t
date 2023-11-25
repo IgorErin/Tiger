@@ -41,5 +41,5 @@
             ((14, "id"), (Parsetree.PIntExp 0))]}}
       ];
     body = (Parsetree.PVarExp (Parsetree.PSimpleVar (16, "rec1")))}
-  message: Types must be equal {(name : String); (id : int);} =/= (Name  rectype1)
+  message: Types must be equal {(name : String); (id : int);} =/= {(name : String); (id : int);}
   error: Type mismatch

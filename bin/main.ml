@@ -22,17 +22,11 @@ let () =
   let name = Config.get_path () in
   let code = read_file name in
   let open Passes in
-  let open Core.Option.Monad_infix in 
+  let open Core.Option.Monad_infix in
   Parsing.run code
   >>| Parsing.dump (Config.is_dparsetree ())
   >>= Typing.run
   >>| Typing.dump (Config.is_dtypedtree ())
-  |>
-  Option.iter (fun result -> 
-    if Config.is_dir () then 
-      result
-      |> Ir.run
-      >>| Ir.dump (Config.is_dir ())
-      |> ignore)
-
+  |> Option.iter (fun result ->
+    if Config.is_dir () then result |> Ir.run >>| Ir.dump (Config.is_dir ()) |> ignore)
 ;;

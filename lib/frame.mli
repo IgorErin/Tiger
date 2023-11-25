@@ -1,5 +1,5 @@
-type t
-type access
+type t [@@deriving show]
+type access [@@deriving show]
 
 val new_frame : label:Temp.label -> formals:bool list -> t
 val alloc_local : frame:t -> access
